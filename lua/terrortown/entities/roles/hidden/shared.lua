@@ -5,7 +5,8 @@ if SERVER then
 end
 
 roles.InitCustomTeam(ROLE.name, {
-    icon = "vgui/ttt/dynamic/roles/icon_hdn"
+    icon = "vgui/ttt/dynamic/roles/icon_hdn",
+    color = Color(0, 0, 0, 255)
 })
 
 function ROLE:PreInitialize()

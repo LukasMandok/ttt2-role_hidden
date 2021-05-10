@@ -1,7 +1,7 @@
 
 if SERVER then
    AddCSLuaFile()
-   
+
    resource.AddFile("materials/vgui/ttt/hdn/icon_grenade.vmt")
    resource.AddFile("materials/vgui/ttt/hdn/icon_knife.vmt")
    resource.AddFile("materials/hud/hvision.vmt")
@@ -23,7 +23,7 @@ local CLOAK_PARTIAL = 2
 local CLOAK_NONE = 1
 
 if CLIENT then
-    local function HiddenWallhack()
+    local function HiddenWallhack() --
         local client = LocalPlayer()
 
         if client:GetSubRole() ~= ROLE_HIDDEN then return end
@@ -112,16 +112,18 @@ if CLIENT then
     ColorMod[ "$pp_colour_mulg" ] = 1 
     ColorMod[ "$pp_colour_mulb" ] = 1 
 
-    local function DoHiddenVision()
+    -- added Stalker Role
+    local function DoHiddenVision() --        
         local client = LocalPlayer()
+
         if not client:Alive() or client:IsSpec() then return end
-        if client:GetSubRole() ~= ROLE_HIDDEN or not client:GetNWBool("ttt2_hd_stalker_mode") then return end
+        if (client:GetSubRole() ~= ROLE_HIDDEN and client:GetBaseRole() ~= ROLE_HIDDEN) or not client:GetNWBool("ttt2_hd_stalker_mode") then return end
 
         DrawColorModify(ColorMod)
-        ColorMod[ "$pp_colour_addr" ] = .09  
+        ColorMod[ "$pp_colour_addr" ] = .09
         ColorMod[ "$pp_colour_addg" ] = .03
-	    ColorMod[ "$pp_colour_contrast" ] = 0.9
-	    ColorMod[ "$pp_colour_colour" ] = 1
+        ColorMod[ "$pp_colour_contrast" ] = 0.9
+        ColorMod[ "$pp_colour_colour" ] = 1
 
         cam.Start3D(EyePos(), EyeAngles())
 
@@ -136,7 +138,8 @@ if CLIENT then
 end
 
 if SERVER then
-    local function ActivateCloaking(ply)
+    -- TODO: Is this function in use?
+    local function ActivateCloaking(ply) --
         ply.hiddenColor = ply:GetColor()
         ply.hiddenRenderMode = ply:GetRenderMode()
         ply.hiddenMat = ply:GetMaterial()
@@ -157,7 +160,7 @@ if SERVER then
         if not self.hiddenRenderMode then self.hiddenRenderMode = render end
         local mat = self:GetMaterial()
         if not self.hiddenMat then self.hiddenMat = mat end
-        
+
         if cloak == CLOAK_FULL then
             mat = "sprites/heatwave"
             clr = Color(255, 255, 255, 3)
@@ -178,20 +181,21 @@ if SERVER then
         self.hiddenCloakMode = cloak
     end
 
-    function plymeta:GetCloakMode()
+    function plymeta:GetCloakMode() -- 
         return self.hiddenCloakMode
     end
 
-    function plymeta:UpdateCloaking()
+    -- added stalker role
+    function plymeta:UpdateCloaking() --
         if not IsValid(self) or not self:IsPlayer() then return end
-        if GetRoundState() ~= ROUND_ACTIVE or self:GetSubRole() ~= ROLE_HIDDEN then self:SetCloakMode(CLOAK_NONE) return end
+        if GetRoundState() ~= ROUND_ACTIVE or (self:GetSubRole() ~= ROLE_HIDDEN and self:GetBaseRole() ~= ROLE_HIDDEN) then self:SetCloakMode(CLOAK_NONE) return end  
         if self:IsSpec() or not self:Alive() then self:SetCloakMode(CLOAK_NONE) return end
         if not self:GetNWBool("ttt2_hd_stalker_mode", false) then self:SetCloakMode(CLOAK_NONE) return end
         if self:Health() >= self:GetMaxHealth() - 10 then
             self:SetCloakMode(CLOAK_FULL)
         else
             self:SetCloakMode(CLOAK_PARTIAL)
-        end 
+        end
     end
 
     hook.Add("Think", "HiddenCloakThink", function()
@@ -203,6 +207,7 @@ if SERVER then
         end
     end)
 
+    -- TODO: Is this in use?
     local function DeactivateCloaking(ply)
         ply:SetColor(ply.hiddenColor)
         ply:SetRenderMode(ply.hiddenRenderMode)
@@ -211,7 +216,7 @@ if SERVER then
 
     local function BetterWeaponStrip(ply, exclude_class)
         if not ply or not IsValid(ply) or not ply:IsPlayer() then return end
-    
+
         local weps = ply:GetWeapons()
         for i = 1, #weps do
           local wep = weps[i]
@@ -265,7 +270,7 @@ if SERVER then
         for i = 1, #plys do
             local ply = plys[i]
             ply:SetNWBool("ttt2_hd_stalker_mode", false)
-            ply:SetNWBool("ttt2_hdnade_stun", false)
+            ply:SetNWBool("ttt2_hd_nade_stun", false)
         end
     end
 
@@ -300,9 +305,10 @@ if SERVER then
         stamMod[1] = stamMod[1] * 1.5
     end)
 
+    -- added Stalker Role
     hook.Add("ScalePlayerDamage", "HiddenDmgPreTransform", function(ply, _, dmginfo)
         local attacker = dmginfo:GetAttacker()
-        if attacker:GetSubRole() ~= ROLE_HIDDEN then return end
+        if attacker:GetSubRole() ~= ROLE_HIDDEN and attacker:GetBaseRole() ~= ROLE_HIDDEN then return end
         if attacker:GetNWBool("ttt2_hd_stalker_mode") then return end
 
         dmginfo:ScaleDamage(0.2)
@@ -318,8 +324,9 @@ if SERVER then
         net.Broadcast()
     end)
 
+    -- added Stalker Role
     hook.Add("PlayerSpawn", "TTT2HiddenRespawn", function(ply)
-        if ply:GetSubRole() ~= ROLE_HIDDEN then return end
+        if ply:GetSubRole() ~= ROLE_HIDDEN and ply:GetBaseRole() ~= ROLE_HIDDEN then return end
         ply:SetStalkerMode(false)
     end)
 end
