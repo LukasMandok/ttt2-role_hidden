@@ -190,12 +190,7 @@ if SERVER then
         return self.hiddenCloakMode
     end
 
-<<<<<<< HEAD
-    -- added stalker role
-    function plymeta:UpdateCloaking() --
-=======
     function plymeta:UpdateCloaking(timeout)
->>>>>>> upstream/main
         if not IsValid(self) or not self:IsPlayer() then return end
         if GetRoundState() ~= ROUND_ACTIVE or (self:GetSubRole() ~= ROLE_HIDDEN and self:GetBaseRole() ~= ROLE_HIDDEN) then self:SetCloakMode(CLOAK_NONE) return end  
         if self:IsSpec() or not self:Alive() then self:SetCloakMode(CLOAK_NONE) return end
@@ -210,10 +205,6 @@ if SERVER then
             local alpha = 1 - (CurTime() - start) / (start)
             self:SetCloakMode(CLOAK_PARTIAL, alpha)
         else
-<<<<<<< HEAD
-            self:SetCloakMode(CLOAK_PARTIAL)
-        end
-=======
             self:SetCloakMode(CLOAK_FULL)
         end
         -- if (self:Health() >= self:GetMaxHealth() - 10) or (not timeout) then
@@ -221,7 +212,6 @@ if SERVER then
         -- else
         --     self:SetCloakMode(CLOAK_PARTIAL)
         -- end 
->>>>>>> upstream/main
     end
 
     hook.Add("Think", "HiddenCloakThink", function()
@@ -233,9 +223,6 @@ if SERVER then
         end
     end)
 
-<<<<<<< HEAD
-    -- TODO: Is this in use?
-=======
     hook.Add("EntityTakeDamage", "TTT2HiddenTakeDamage", function(tgt, dmg)
         if not IsValid(tgt) or not tgt:IsPlayer() or not tgt:Alive() or tgt:IsSpec() then return end
         if tgt:GetSubRole() ~= ROLE_HIDDEN then return end
@@ -243,7 +230,6 @@ if SERVER then
         tgt:UpdateCloaking(true)
     end)
 
->>>>>>> upstream/main
     local function DeactivateCloaking(ply)
         ply:SetColor(ply.hiddenColor)
         ply:SetRenderMode(ply.hiddenRenderMode)
@@ -306,13 +292,9 @@ if SERVER then
         for i = 1, #plys do
             local ply = plys[i]
             ply:SetNWBool("ttt2_hd_stalker_mode", false)
-<<<<<<< HEAD
             ply:SetNWBool("ttt2_hd_nade_stun", false)
-=======
-            ply:SetNWBool("ttt2_hdnade_stun", false)
             ply.hiddenCloakTimeout = nil
             ply.hiddenUseTimeout = nil
->>>>>>> upstream/main
         end
     end
 
