@@ -43,8 +43,6 @@ if SERVER then
     function ROLE:RemoveRoleLoadout(ply, isRoleChange)
         ply:RemoveEquipmentWeapon("weapon_ttt_hd_knife")
         ply:RemoveEquipmentWeapon("weapon_ttt_hd_nade")
-        ply:RemoveEquipmentItem("item_ttt_climb")
-        ply:SetStalkerMode(false)
         STATUS:RemoveStatus(ply, "ttt2_hdn_invisbility")
     end
 
@@ -58,7 +56,6 @@ if SERVER then
             STATUS:AddStatus(ply, "ttt2_hdn_invisbility")
             ply:GiveEquipmentWeapon("weapon_ttt_hd_knife")
             ply:GiveEquipmentWeapon("weapon_ttt_hd_nade")
-            ply:GiveEquipmentItem("item_ttt_climb")
         end
     end)
 end
