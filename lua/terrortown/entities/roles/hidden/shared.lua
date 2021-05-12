@@ -47,6 +47,7 @@ if SERVER then
     end
 
     hook.Add("KeyPress", "HiddenEnterStalker", function(ply, key)
+        print("Start Hidden Mode")
         if ply:GetSubRole() ~= ROLE_HIDDEN or not ply:Alive() or ply:IsSpec() then return end
         if ply:GetNWBool("ttt2_hd_stalker_mode", false) then return end
 

@@ -308,9 +308,11 @@ if SERVER then
     -- added Stalker Role
     hook.Add("ScalePlayerDamage", "HiddenDmgPreTransform", function(ply, _, dmginfo)
         local attacker = dmginfo:GetAttacker()
+        print("attacker:", attacker:Nick(), "role:", attacker:GetSubRole(), "baserole:", arracker:GetBaseRole(), "Stalker:", ROLE_STALKER, "Hidden:", ROLE_HIDDEN)
         if attacker:GetSubRole() ~= ROLE_HIDDEN and attacker:GetBaseRole() ~= ROLE_HIDDEN then return end
         if attacker:GetNWBool("ttt2_hd_stalker_mode") then return end
 
+        print("ScalePlayerDamage:" 0.2)
         dmginfo:ScaleDamage(0.2)
     end)
 

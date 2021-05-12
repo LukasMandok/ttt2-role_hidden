@@ -13,8 +13,9 @@ L["ttt2_desc_" .. STALKER.name] = [[Der Stalker ist ein neutraler Killer. Durch 
 Allerdings stehen ihm nur noch seine Krallen und telekinetische Fähigkeiten zur Verfügung.]]
 
 --Weapons
-L["weapon_ttt_slk_nade_name"] = "Telekinese"
-L["weapon_ttt_slk_knife_name"] = "Krallen"
+L["weapon_ttt_slk_telekin_name"] = "Telekinese"
+L["weapon_ttt_slk_scream_name"] = "Schrei"
+L["weapon_ttt_slk_claws_name"] = "Krallen"
 
 --EPOP
 L["slk_epop_title"] = "{nick} ist der Stalker!"

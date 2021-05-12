@@ -13,8 +13,9 @@ L["ttt2_desc_" .. STALKER.name] = [[The Stalker is a neutral killer. By unleashi
 are limited to their claws and telekinesis.]]
 
 --Weapons
-L["weapon_ttt_slk_nade_name"] = "Telekinesis"
-L["weapon_ttt_slk_knife_name"] = "Claws"
+L["weapon_ttt_slk_telekin_name"] = "Telekinesis"
+L["weapon_ttt_slk_scream_name"] = "Scream"
+L["weapon_ttt_slk_claws_name"] = "Claws"
 
 --EPOP
 L["slk_epop_title"] = "{nick} is the Stalker!"
