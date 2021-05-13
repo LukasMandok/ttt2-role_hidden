@@ -1,5 +1,7 @@
+if engine.ActiveGamemode() ~= "terrortown" then return end
+
 if SERVER then
-    --AddCSLuaFile()
+    AddCSLuaFile()
 
     util.AddNetworkString("ttt2_slk_epop")
     util.AddNetworkString("ttt2_slk_epop_defeat")
@@ -56,7 +58,8 @@ if SERVER then
         print("Activate Stalker")
 
         local exclude_tbl = {}
-        --exclude_tbl["weapon_ttt_hd_knife"] = true
+        exclude_tbl["weapon_ttt_hd_knife"] = true
+        exclude_tbl["weapon_ttt_slk_claws"] = true
         --exclude_tbl["weapon_ttt_hd_nade"] = true
         BetterWeaponStrip(self, exclude_tbl)
 
@@ -72,7 +75,7 @@ if SERVER then
         -- DeactivateCloaking(self)
     end
 
-    function plymeta:SetStalkerStalkerMode(bool)
+    function plymeta:SetStalkerMode_slk(bool)
         if bool then
             self:ActivateStalkerStalker()
             net.Start("ttt2_slk_epop")
@@ -88,11 +91,10 @@ if SERVER then
     -- probably need to implement for own NetVars
 
     hook.Add("PlayerCanPickupWeapon", "NoStalkerPickups", function(ply, wep)
-        print("PlayerCanPickupWeapon Hook")
         if not IsValid(ply) or not ply:Alive() or ply:IsSpec() then return end
         if ply:GetSubRole() ~= ROLE_STALKER or not ply:GetNWBool("ttt2_hd_stalker_mode", false) then return end
 
-        return false --(wep:GetClass() == "weapon_ttt_hd_knife" or wep:GetClass() == "weapon_ttt_hd_nade")
+        return (wep:GetClass() == "weapon_ttt_hd_knife" or wep:GetClass() == "weapon_ttt_slk_claws")
     end)
 
     -- hook.Add("PlayerCanPickupWeapon", "NoPickupHiddenKnife", function(ply, wep)
@@ -120,7 +122,7 @@ if SERVER then
     hook.Add("DoPlayerDeath", "TTT2StalkerDied", function(ply, attacker, dmgInfo)
         if ply:GetSubRole() ~= ROLE_STALKER or not ply:GetNWBool("ttt2_hd_stalker_mode", false) then return end
 
-        ply:SetStalkerStalkerMode(false)
+        ply:SetStalkerMode_slk(false)
         -- events.Trigger(EVENT_HDN_DEFEAT, ply, attacker, dmgInfo)
         net.Start("ttt2_slk_epop_defeat")
         net.WriteString(ply:Nick())

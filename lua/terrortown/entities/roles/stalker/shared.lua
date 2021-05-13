@@ -4,6 +4,8 @@ if SERVER then
     AddCSLuaFile()
 end
 
+-- TODO: Implement Mana instead of Ammunition
+
 roles.InitCustomTeam(ROLE.name, {
     icon = "vgui/ttt/dynamic/roles/icon_hdn",
     color = Color(0, 49, 82, 255)
@@ -44,7 +46,11 @@ end
 if SERVER then
 
     function ROLE:RemoveRoleLoadout(ply, isRoleChange)
+        print("Remove Equippment: Knife and Claws")
+        ply:RemoveEquipmentWeapon("weapon_ttt_hd_knife")
         ply:RemoveEquipmentWeapon("weapon_ttt_slk_claws")
+        ply:RemoveEquipmentItem("item_ttt_climb")
+        ply:SetStalkerMode_slk(false)
         STATUS:RemoveStatus(ply, "ttt2_hdn_invisbility")
     end
 
@@ -53,9 +59,12 @@ if SERVER then
         if ply:GetNWBool("ttt2_hd_stalker_mode", false) then return end
 
         if key == IN_RELOAD then
-            ply:SetStalkerMode(true)
-            STATUS:AddStatus(ply, "ttt2_hdn_invisbility")
+            ply:SetStalkerMode_slk(true)
+            --STATUS:AddStatus(ply, "ttt2_hdn_invisbility")
+            print("Equipp Knife and Claws")
+            ply:GiveEquipmentWeapon("weapon_ttt_hd_knife")
             ply:GiveEquipmentWeapon("weapon_ttt_slk_claws")
+            ply:GiveEquipmentItem("item_ttt_climb")
         end
     end)
 end
