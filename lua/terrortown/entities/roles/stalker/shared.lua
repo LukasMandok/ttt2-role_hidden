@@ -47,8 +47,9 @@ if SERVER then
 
     function ROLE:RemoveRoleLoadout(ply, isRoleChange)
         print("Remove Equippment: Knife and Claws")
-        ply:RemoveEquipmentWeapon("weapon_ttt_hd_knife")
+       -- ply:RemoveEquipmentWeapon("weapon_ttt_hd_knife")
         ply:RemoveEquipmentWeapon("weapon_ttt_slk_claws")
+        ply:RemoveEquipmentWeapon("weapon_ttt_slk_tele")
         ply:RemoveEquipmentItem("item_ttt_climb")
         ply:SetStalkerMode_slk(false)
         STATUS:RemoveStatus(ply, "ttt2_hdn_invisbility")
@@ -62,8 +63,9 @@ if SERVER then
             ply:SetStalkerMode_slk(true)
             --STATUS:AddStatus(ply, "ttt2_hdn_invisbility")
             print("Equipp Knife and Claws")
-            ply:GiveEquipmentWeapon("weapon_ttt_hd_knife")
+            --ply:GiveEquipmentWeapon("weapon_ttt_hd_knife")
             ply:GiveEquipmentWeapon("weapon_ttt_slk_claws")
+            ply:GiveEquipmentWeapon("weapon_ttt_slk_tele")
             ply:GiveEquipmentItem("item_ttt_climb")
         end
     end)

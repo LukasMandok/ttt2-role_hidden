@@ -48,7 +48,7 @@ SWEP.Primary.Hit           = Sound( "npc/fast_zombie/claw_strike3.wav" )
 
 -- SECONDARY: Claws Push
 SWEP.Secondary.Damage      = 10
-SWEP.Secondary.HitForce    = 6000
+SWEP.Secondary.HitForce    = 4000
 SWEP.Secondary.ClipSize    = -1
 SWEP.Secondary.DefaultClip = -1
 SWEP.Secondary.Automatic   = false
@@ -390,6 +390,7 @@ function SWEP:Murder(trace, spos, sdest)
 end
 
 function SWEP:PushObject(tgt, trace, force) -- phys, pdir, maxforce, is_ragdol
+    print("Push Target:", tgt)
 	-- local speed = phys:GetVelocity():Length()
 
 	-- -- remap speed from 0 -> 125 to force 1 -> 4000
@@ -410,12 +411,13 @@ function SWEP:PushObject(tgt, trace, force) -- phys, pdir, maxforce, is_ragdol
 
 	-- phys:ApplyForceCenter(pdir)
 
-    local dir = trace.Normal
+    local dir = self:GetOwner():GetEyeTrace(MASK_SHOT).Normal
+    print("direction: ", dir)
 
     local phys = tgt:GetPhysicsObject()    
     
-    if IsValid(phys) then
-        local mass = phys:GetMass()
+    if IsValid(phys) and not tgt:IsPlayer()     then
+        local mass = math.log(math.Clamp(phys:GetMass(), 1, 1000))
         print("Phys Object has mass:", mass)
 
         local pushvel = dir * force / mass
@@ -424,13 +426,16 @@ function SWEP:PushObject(tgt, trace, force) -- phys, pdir, maxforce, is_ragdol
         phys:AddVelocity(pushvel)
 
     elseif tgt:IsPlayer() then
-        local mass = 10
+        local mass = 5
 
         local pushvel = dir * force / mass
         pushvel.z = math.Clamp(pushvel.z, 50, 300)
         print("Player Push Velocity:", pushvel)
         tgt:SetVelocity(tgt:GetVelocity() + pushvel)
 
+    end
+
+    if tgt:IsPlayer() then
         tgt.was_pushed = {
             att = self:GetOwner(),
             t = CurTime(),
@@ -438,6 +443,5 @@ function SWEP:PushObject(tgt, trace, force) -- phys, pdir, maxforce, is_ragdol
             -- infl = self
         }
     end
-
     
 end

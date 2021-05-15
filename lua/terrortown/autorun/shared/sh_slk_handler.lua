@@ -19,6 +19,31 @@ if CLIENT then
     -- HiddenWallhack not for stalker
 
     -- DoHiddenVision (hook("RenderScreenspaceEffects")) in sh_hd_handler
+    
+    -- net.Receive( "Flay", function( len )
+
+    --     if LocalPlayer():Team() == TEAM_HUMAN then
+        
+    --         DisorientTime = CurTime() + 20
+    --         ViewWobble = 7.5
+    --         MotionBlur = 0.9
+    --         Sharpen = 4.5
+    --         ColorModify[ "$pp_colour_mulg" ]   =  3.5
+    --         ColorModify[ "$pp_colour_mulr" ]   =  4.5
+    --         ColorModify[ "$pp_colour_addr" ]   =  0.2
+    --         ColorModify[ "$pp_colour_addg" ]   =  0.1
+    --         ColorModify[ "$pp_colour_colour" ] = -3.0
+        
+    --     else
+        
+    --         //ViewWobble = 2.5
+    --         Sharpen = 2.5
+    --         MotionBlur = 0.5
+    --         ColorModify[ "$pp_colour_colour" ] = -1.2
+        
+    --     end
+    
+    -- end )
 end
 
 
@@ -94,7 +119,7 @@ if SERVER then
         if not IsValid(ply) or not ply:Alive() or ply:IsSpec() then return end
         if ply:GetSubRole() ~= ROLE_STALKER or not ply:GetNWBool("ttt2_hd_stalker_mode", false) then return end
 
-        return (wep:GetClass() == "weapon_ttt_hd_knife" or wep:GetClass() == "weapon_ttt_slk_claws")
+        return (wep:GetClass() == "weapon_ttt_slk_claws" or wep:GetClass() == "weapon_ttt_slk_tele")
     end)
 
     -- hook.Add("PlayerCanPickupWeapon", "NoPickupHiddenKnife", function(ply, wep)
