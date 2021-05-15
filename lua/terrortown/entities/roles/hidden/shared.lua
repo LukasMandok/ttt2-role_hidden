@@ -6,11 +6,11 @@ end
 
 roles.InitCustomTeam(ROLE.name, {
     icon = "vgui/ttt/dynamic/roles/icon_hdn",
-    color = Color(0, 0, 0, 255)
+    color = Color(255, 255, 255)
 })
 
 function ROLE:PreInitialize()
-	self.color = Color(0, 0, 0, 255)
+	self.color = Color(0, 0, 0)
 
 	self.abbr = "hdn"
 	self.score.surviveBonusMultiplier = 0.5
@@ -41,6 +41,11 @@ end
 if SERVER then
 
     function ROLE:RemoveRoleLoadout(ply, isRoleChange)
+        if ply:GetMaxHealth() > 100 then
+            ply:SetMaxHealth(100)
+        end
+        ply:SetHealth(math.Clamp(ply:Health(), 1, ply:GetMaxHealth()))
+        ply:SetMaxHealth(100)
         ply:RemoveEquipmentWeapon("weapon_ttt_hd_knife")
         ply:RemoveEquipmentWeapon("weapon_ttt_hd_nade")
         ply:RemoveEquipmentItem("item_ttt_climb")
@@ -54,6 +59,11 @@ if SERVER then
         if ply:GetNWBool("ttt2_hd_stalker_mode", false) then return end
 
         if key == IN_RELOAD then
+            local c = (#util.GetAlivePlayers() - 1) * 8
+            local hp = math.Clamp(ply:Health() + c, ply:Health(), 300)
+            local max_hp = math.Clamp(100 + c, ply:GetMaxHealth(), 300)
+            ply:SetMaxHealth(max_hp)
+            ply:SetHealth(hp)
             ply:SetStalkerMode(true)
             STATUS:AddStatus(ply, "ttt2_hdn_invisbility")
             ply:GiveEquipmentWeapon("weapon_ttt_hd_knife")
