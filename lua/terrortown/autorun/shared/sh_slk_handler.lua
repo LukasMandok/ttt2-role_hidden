@@ -132,14 +132,14 @@ if SERVER then
     hook.Add("TTTPlayerSpeedModifier", "StalkerSpeedBonus", function(ply, _, _, speedMod)
         if ply:GetSubRole() ~= ROLE_STALKER or not ply:GetNWBool("ttt2_hd_stalker_mode") then return end
 
-        speedMod[1] = speedMod[1] * 1.8
+        speedMod[1] = speedMod[1] * 1.6
     end)
 
      hook.Add("TTT2StaminaRegen", "StalkerStaminaMod", function(ply, stamMod)
         if not IsValid(ply) or not ply:Alive() or ply:IsSpec() then return end
         if ply:GetSubRole() ~= ROLE_STALKER or not ply:GetNWBool("ttt2_hd_stalker_mode") then return end
 
-        stamMod[1] = stamMod[1] * 1.8
+        stamMod[1] = stamMod[1] * 1.6
     end)
 
     -- using hook("ScalePlayerDamage") of hidden
