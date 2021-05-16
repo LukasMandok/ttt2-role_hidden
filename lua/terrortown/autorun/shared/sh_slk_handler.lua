@@ -70,8 +70,8 @@ if SERVER then
           else
             wep.WorldModel = ""
             net.Start("ttt2_slk_network_wep")
-            net.WriteEntity(wep)
-            net.WriteString(wep.WorldModel)
+                net.WriteEntity(wep)
+                net.WriteString(wep.WorldModel)
             net.Broadcast()
           end
         end
@@ -89,6 +89,7 @@ if SERVER then
         BetterWeaponStrip(self, exclude_tbl)
 
         self:SetNWBool("ttt2_hd_stalker_mode", true)
+        self:SetNWInt("ttt2_stalker_mana", 100)
         self:UpdateCloaking()
 
         -- events.Trigger(EVENT_HDN_ACTIVATE, self)
@@ -96,6 +97,7 @@ if SERVER then
 
     function plymeta:DeactivateStalkerStalker()
         self:SetNWBool("ttt2_hd_stalker_mode", false)
+        self:SetNWInt("ttt2_stalker_mana", 0)
         self:UpdateCloaking()
         -- DeactivateCloaking(self)
     end

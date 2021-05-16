@@ -77,6 +77,10 @@ SWEP.IsSilent    = true
 SWEP.DeploySpeed = 2
 
 
+-- TODO: Richtig Implementieren
+SWEP.RegenTime = true
+
+
 -- Mana Managment
 SWEP.Mana = {}
 SWEP.Mana.Scream = 25
@@ -84,12 +88,8 @@ SWEP.Mana.Flay = 50
 SWEP.Mana.Psycho = 75
 SWEP.Mana.Heal = 100
 
-
-local swingSound = Sound("WeaponFrag.Throw")
-local hitSound = Sound("Flesh.ImpactHard")
-
 function SWEP:Initialize()
-    self.Weapon:SetWeaponHoldType( self.HoldType )
+    self:SetWeaponHoldType( self.HoldType )
     --self:SetHoldType("knife")
 end
 
@@ -100,9 +100,9 @@ end
 function SWEP:Equip(owner)
     if not SERVER or not owner then return end
 
-    self.Owner:DrawWorldModel( false )
+    self:GetOwner():DrawWorldModel( true )
     --self.ViewModel = "models/weapons/v_banshee.mdl"
-    self.WorldModel = ""
+    --self.WorldModel = ""
     -- net.Start("ttt2_hdn_network_wep")
     --     net.WriteEntity(self)
     --     net.WriteString("")
@@ -113,6 +113,7 @@ end
 function SWEP:PrimaryAttack()
     -- TODO: Only set this, if the attack hit something.    
     self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
+    self:SetNextSecondaryFire(CurTime() + self.Primary.Delay)
     --self.ViewModel = "models/weapons/v_banshee.mdl"
     local owner = self:GetOwner()
 
@@ -122,7 +123,7 @@ function SWEP:PrimaryAttack()
 
     owner:LagCompensation(true)
 
-        local tgt, spos, sdest, trace = self.Weapon:MeleeTrace(self.HitDistance)
+        local tgt, spos, sdest, trace = self:MeleeTrace(self.HitDistance)
 
         print("target:", tgt, "pos:", spos, "destination:", sdest, "trace:", trace)
 
@@ -139,7 +140,7 @@ function SWEP:PrimaryAttack()
             if tgt:IsPlayer() or tgt:GetClass() == "prop_ragdoll" then
                 owner:SetAnimation(PLAYER_ATTACK1)
                 
-                self.Weapon:SendWeaponAnim( ACT_VM_PRIMARYATTACK )
+                self:SendWeaponAnim( ACT_VM_PRIMARYATTACK )
                 tgt:EmitSound( self.Primary.Hit, 100, math.random(90,110) )
                 --self:SendWeaponAnim(ACT_VM_MISSCENTER)
     
@@ -148,7 +149,7 @@ function SWEP:PrimaryAttack()
         else
             owner:SetAnimation(PLAYER_ATTACK1)
 
-            self.Weapon:SendWeaponAnim(ACT_VM_MISSCENTER)
+            self:SendWeaponAnim(ACT_VM_MISSCENTER)
             -- TODO: keine Ahnung
             owner:EmitSound( self.Primary.Sound, 100, math.random(80,100) )
         end
@@ -157,15 +158,15 @@ function SWEP:PrimaryAttack()
         --if SERVER then owner:SetAnimation(PLAYER_ATTACK1) end
         
         if SERVER and trace.Hit and trace.HitNonWorld and IsValid(tgt) then
-            self.Weapon:DealDamage(self.Primary.Damage, tgt, trace, spos, sdest, lifesteal)
+            self:DealDamage(self.Primary.Damage, tgt, trace, spos, sdest, lifesteal)
         end
 
     owner:LagCompensation(false)
 end
 
 function SWEP:SecondaryAttack()
-    self.Weapon:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
-    self.Weapon:SetNextSecondaryFire( CurTime() + self.Secondary.Delay )
+    self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
+    self:SetNextSecondaryFire( CurTime() + self.Secondary.Delay )
  
     --self.ViewModel = "models/weapons/v_banshee.mdl"
     local owner = self:GetOwner()
@@ -176,13 +177,15 @@ function SWEP:SecondaryAttack()
 
     owner:LagCompensation(true)
 
-        local tgt, spos, sdest, trace = self.Weapon:MeleeTrace(self.HitDistance)
+        local tgt, spos, sdest, trace = self:MeleeTrace(self.HitDistance)
 
         print("target:", tgt, "pos:", spos, "destination:", sdest, "trace:", trace)
 
         if IsValid(tgt) then
 
-            --self.Weapon:SendWeaponAnim(ACT_VM_MISSCENTER)
+            print("Target:", tgt)
+
+            --self:SendWeaponAnim(ACT_VM_MISSCENTER)
     
             -- local eData = EffectData()
             -- eData:SetStart(spos)
@@ -191,7 +194,7 @@ function SWEP:SecondaryAttack()
             -- eData:SetEntity(tgt)
 
             owner:SetAnimation(PLAYER_ATTACK1)
-            self.Weapon:SendWeaponAnim( ACT_VM_HITCENTER )
+            self:SendWeaponAnim( ACT_VM_HITCENTER )
             tgt:EmitSound( self.Secondary.Hit, 100, math.random(90,110) )
 
             self:PushObject(tgt, trace, self.Secondary.HitForce)
@@ -200,7 +203,7 @@ function SWEP:SecondaryAttack()
             -- elseif tgt:GetClass() == "prop_ragdoll" then
             --     owner:SetAnimation(PLAYER_ATTACK1)
                 
-            --     self.Weapon:SendWeaponAnim( ACT_VM_HITCENTER )
+            --     self:SendWeaponAnim( ACT_VM_HITCENTER )
             --     tgt:EmitSound( self.Secondary.Hit, 100, math.random(90,110) )
             --     --self:SendWeaponAnim(ACT_VM_MISSCENTER)
                 
@@ -218,7 +221,7 @@ function SWEP:SecondaryAttack()
         else
             owner:SetAnimation(PLAYER_ATTACK1)
             
-            self.Weapon:SendWeaponAnim(ACT_VM_MISSCENTER)
+            self:SendWeaponAnim(ACT_VM_MISSCENTER)
             -- TODO: keine Ahnung
             owner:EmitSound( self.Secondary.Sound, 100, math.random(80,100) )
         end
@@ -227,7 +230,7 @@ function SWEP:SecondaryAttack()
         --if SERVER then owner:SetAnimation(PLAYER_ATTACK1) end
         
         if SERVER and trace.Hit and trace.HitNonWorld and IsValid(tgt) then
-            self.Weapon:DealDamage(self.Secondary.Damage, tgt, trace, spos, sdest, lifesteal)
+            self:DealDamage(self.Secondary.Damage, tgt, trace, spos, sdest, lifesteal)
         end
 
     owner:LagCompensation(false)
@@ -273,15 +276,6 @@ function SWEP:DealDamage(damage, tgt, trace, spos, sdest, lifesteal)
     local owner = self:GetOwner()
 
     if tgt:IsPlayer() then
-        local health = tgt:Health()
-        if  health < (damage + 5) then
-            self:Murder(trace, spos, sdest)
-            
-            -- TODO: if Player has aqquired the lifesteal item: 20% of remaining health + 10 flat
-            if lifesteal and self.RegenTime then
-                owner:AddHealth(health * 0.2 + 10)
-            end
-        else
             local dmg = DamageInfo()
             dmg:SetDamage(damage)
             dmg:SetAttacker(owner)
@@ -292,6 +286,15 @@ function SWEP:DealDamage(damage, tgt, trace, spos, sdest, lifesteal)
 
             tgt:DispatchTraceAttack(dmg, spos + (owner:GetAimVector() * 3), sdest)
             
+        local health = tgt:Health()
+        if  health < (damage + 5) then
+            --self:Murder(trace, spos, sdest)
+            
+            -- TODO: if Player has aqquired the lifesteal item: 20% of remaining health + 10 flat
+            if lifesteal and self.RegenTime then
+                owner:AddHealth(health * 0.2 + 10)
+            end
+        else
             -- TODO: if Player has aqquired the lifesteal item
             if lifesteal and self.RegenTime then
                 owner:AddHealth(damage * 0.2)
@@ -363,59 +366,38 @@ function SWEP:Murder(trace, spos, sdest)
             pos = pos - (angle:Forward() * 10)
         end
 
-        local knife = ents.Create("prop_physics")
-        knife:SetModel("models/weapons/w_knife_t.mdl")
-        knife:SetPos(pos)
-        knife:SetCollisionGroup(COLLISION_GROUP_DEBRIS)
-        knife:SetAngles(angle)
+        -- local knife = ents.Create("prop_physics")
+        -- knife:SetModel("models/weapons/w_knife_t.mdl")
+        -- knife:SetPos(pos)
+        -- knife:SetCollisionGroup(COLLISION_GROUP_DEBRIS)
+        -- knife:SetAngles(angle)
 
-        knife.CanPickup = false 
+        -- knife.CanPickup = false 
 
-        knife:Spawn()
+        -- knife:Spawn()
 
-        local phys = knife:GetPhysicsObject()
+        -- local phys = knife:GetPhysicsObject()
 
-        if IsValid(phys) then
-            phys:EnableCollisions(false)
-        end
+        -- if IsValid(phys) then
+        --     phys:EnableCollisions(false)
+        -- end
 
-        constraint.Weld(rag, knife, bone, 0, 0, true)
+        -- constraint.Weld(rag, knife, bone, 0, 0, true)
 
-        rag:CallOnRemove("ttt_knife_cleanup", function()
-            SafeRemoveEntity(knife)
-        end)
+        -- rag:CallOnRemove("ttt_knife_cleanup", function()
+        --     SafeRemoveEntity(knife)
+        -- end)
     end
 
     tgt:DispatchTraceAttack(dmg, spos + owner:GetAimVector() * 3, sdest)
 end
 
 function SWEP:PushObject(tgt, trace, force) -- phys, pdir, maxforce, is_ragdol
-    print("Push Target:", tgt)
-	-- local speed = phys:GetVelocity():Length()
-
-	-- -- remap speed from 0 -> 125 to force 1 -> 4000
-	-- local force = maxforce + (1 - maxforce) * (speed / 125)
-
-	-- if is_ragdoll then
-	-- 	force = force * 2
-	-- end
-
-	-- pdir = pdir * force
-
-	-- local mass = phys:GetMass()
-
-	-- -- scale more for light objects
-	-- if mass < 50 then
-	-- 	pdir = pdir * (mass + 0.5) * 0.02
-	-- end
-
-	-- phys:ApplyForceCenter(pdir)
-
     local dir = self:GetOwner():GetEyeTrace(MASK_SHOT).Normal
-    print("direction: ", dir)
+    print("Push Target:", tgt, "direction: ", dir)
 
-    local phys = tgt:GetPhysicsObject()    
-    
+    local phys = tgt:GetPhysicsObject()
+
     if IsValid(phys) and not tgt:IsPlayer()     then
         local mass = math.log(math.Clamp(phys:GetMass(), 1, 1000))
         print("Phys Object has mass:", mass)

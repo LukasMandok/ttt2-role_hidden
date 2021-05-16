@@ -183,10 +183,11 @@ function SWEP:Tele()
 
     -- TODO: Implement Mana System
     -- if not enough mana, return
-    -- if owner:GetInt( "Mana" ) < self.Mana then
-    -- 	owner:EmitSound( self.Primary.Miss, 40, 250 )
-    -- 	return
-    -- end
+    if owner:GetNWInt("ttt2_stalker_mana") < self.Mana then
+        owner:EmitSound( self.Primary.Miss, 40, 250 )
+        return
+    end
+    
     local phys
     if IsValid(tr.Entity) then
         phys = tr.Entity:GetPhysicsObject()

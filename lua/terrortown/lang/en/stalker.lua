@@ -12,6 +12,9 @@ L["target_" .. STALKER.name] = "Stalker"
 L["ttt2_desc_" .. STALKER.name] = [[The Stalker is a neutral killer. By unleashing their power, they gain speed and invisibility but 
 are limited to their claws and telekinesis.]]
 
+-- General
+L["slk_mana_name"] = "Mana"
+
 --Weapons
 L["weapon_ttt_slk_tele_name"] = "Telekinesis"
 L["weapon_ttt_slk_scream_name"] = "Scream"
