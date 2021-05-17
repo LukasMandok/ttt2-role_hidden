@@ -23,6 +23,8 @@ if CLIENT then -- CLIENT
 
 		print("ForceELement:", self.id)
 		hud:ForceElement(self.id)
+
+		hudelements.RegisterChildRelation(self.id, "pure_skin_playerinfo", false)
 	end
 
 	function HUDELEMENT:Initialize()

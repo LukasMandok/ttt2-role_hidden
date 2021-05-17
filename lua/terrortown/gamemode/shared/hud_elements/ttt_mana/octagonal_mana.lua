@@ -25,6 +25,8 @@ if CLIENT then
 			hud:ForceElement(self.id)
 		end
 
+		--hudelements.RegisterChildRelation(self.id, "octagonal_target", false)
+
 		self.disabledUnlessForced = true
 	end
 
@@ -89,7 +91,52 @@ if CLIENT then
 		local name = "Test"
 		draw.AdvancedText(name, "OctagonalBar", x + self.iconSize + 2 * self.pad + 4, y + h * 0.5, util.GetDefaultColor(self.basecolor), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, false, self.scale)
 
+		print("Octagonal - Mana:", self.scale)
+
 		--           x,            y, width,        height, color,         progress,                                    scale,      text,                                textpadding
 		self:DrawBar(x + self.pad, y, w - self.pad, h, self.extraBarColor, (HUDEditor.IsEditing and 1) or (mana / 100), self.scale, LANG.GetTranslation("slk_mana_name"))
 	end
 end
+
+-- local base = "octagonal_target"
+
+-- DEFINE_BASECLASS(base)
+
+-- HUDELEMENT.Base = base
+-- HUDELEMENT.icon = Material("vgui/ttt/icon_bodyguard_guarding")
+
+-- if CLIENT then
+-- 	function HUDELEMENT:PreInitialize()
+-- 		BaseClass.PreInitialize(self)
+
+-- 		local hud = huds.GetStored("octagonal")
+-- 		if hud then
+-- 			hud:ForceElement(self.id)
+-- 		end
+
+-- 		-- set as NOT fallback default
+-- 		self.disabledUnlessForced = true
+-- 	end
+
+-- 	function HUDELEMENT:ShouldDraw()
+-- 		--if not BODYGRD_DATA then return false end
+
+-- 		local client = LocalPlayer()
+
+-- 		return HUDEditor.IsEditing or (client:IsActive() and client:Alive() and client:GetSubRole() == ROLE_STALKER and client:GetNWBool("ttt2_hd_stalker_mode", false))
+-- 	end
+
+-- 	function HUDELEMENT:Draw()
+-- 		local ply = LocalPlayer()
+
+-- 		if not IsValid(ply) then return end
+
+-- 		-- local guarding = ply:GetNWEntity("guarding_player", nil)
+
+-- 		-- if HUDEditor.IsEditing then
+-- 		self:DrawComponent("- BodyGuard -")
+-- 		-- elseif guarding and IsValid(guarding) and ply:IsActive() then
+-- 		-- 	self:DrawComponent(guarding:Nick())
+-- 		-- end
+-- 	end
+-- end

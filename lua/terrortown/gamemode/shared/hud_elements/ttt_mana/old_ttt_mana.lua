@@ -23,7 +23,7 @@ if CLIENT then -- CLIENT
 
 		self.disabledUnlessForced = true
 
-		--hudelements.RegisterChildRelation(self.id, "old_ttt_info", false)
+		hudelements.RegisterChildRelation(self.id, "old_ttt_info", false)
 	end
 
 	function HUDELEMENT:Initialize()
@@ -103,6 +103,8 @@ if CLIENT then -- CLIENT
 			mana = client:GetNWInt("ttt2_stalker_mana", 0)
 
 			multiplier = mana / 100
+
+			print("Old TTT - Mana:", self.scale)
 			-- if not client:GetNWInt("Mana", 0) > 0 then
 			-- 	local bloodlustTime = client:GetNWInt("Bloodlust", 0)
 			-- 	local delay = GetGlobalInt("ttt2_vamp_bloodtime")
