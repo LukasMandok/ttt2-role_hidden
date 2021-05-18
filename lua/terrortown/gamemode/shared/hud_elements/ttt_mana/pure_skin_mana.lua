@@ -15,20 +15,17 @@ if CLIENT then -- CLIENT
 	}
 
 	function HUDELEMENT:PreInitialize()
-		print("PreInitialize: Pure Skin", self.Base)
 		BaseClass.PreInitialize(self)
 
 		local hud = huds.GetStored("pure_skin")
 		if not hud then return end
 
-		print("ForceELement:", self.id)
 		hud:ForceElement(self.id)
 
 		hudelements.RegisterChildRelation(self.id, "pure_skin_playerinfo", false)
 	end
 
 	function HUDELEMENT:Initialize()
-		print("Initialize: pure Skin")
 		self.scale = 1.0
 		self.basecolor = self:GetHUDBasecolor()
 		self.pad = pad
@@ -62,7 +59,6 @@ if CLIENT then -- CLIENT
 	end
 
 	function HUDELEMENT:DrawComponent(multiplier, col, text)
-		print("DrawComponent PureSkin")
 		multiplier = multiplier or 1
 
 		local pos = self:GetPos()
@@ -79,7 +75,6 @@ if CLIENT then -- CLIENT
 	end
 
 	function HUDELEMENT:ShouldDraw()
-		print("ShouldDraw pure skin")
 		local client = LocalPlayer()
 
 		--return IsValid(client)
@@ -87,7 +82,6 @@ if CLIENT then -- CLIENT
 	end
 
 	function HUDELEMENT:Draw()
-		print("Draw Pure Skin")
 		local client = LocalPlayer()
 		local multiplier, mana
 

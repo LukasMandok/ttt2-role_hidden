@@ -58,8 +58,6 @@ if CLIENT then
 	function HUDELEMENT:ShouldDraw()
 		local client = LocalPlayer()
 
-		print("ShouldDraw octagonal")
-
 		return HUDEditor.IsEditing or (client:IsActive() and client:Alive() and client:GetSubRole() == ROLE_STALKER and client:GetNWBool("ttt2_hd_stalker_mode", false))
 		-- pure_skin: return IsValid(client) 
 		-- octagonal: return HUDEditor.IsEditing or client.drowningProgress and client:Alive() and client.drowningProgress ~= -1
@@ -87,11 +85,6 @@ if CLIENT then
 		self:DrawBg(x, y, w, h, self.basecolor)
 		self:DrawBg(x, y, self.pad, h, self.extraBarColor)
 		self:DrawBg(x, y, self.pad, h, self.darkOverlayColor)
-
-		local name = "Test"
-		draw.AdvancedText(name, "OctagonalBar", x + self.iconSize + 2 * self.pad + 4, y + h * 0.5, util.GetDefaultColor(self.basecolor), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, false, self.scale)
-
-		print("Octagonal - Mana:", self.scale)
 
 		--           x,            y, width,        height, color,         progress,                                    scale,      text,                                textpadding
 		self:DrawBar(x + self.pad, y, w - self.pad, h, self.extraBarColor, (HUDEditor.IsEditing and 1) or (mana / 100), self.scale, LANG.GetTranslation("slk_mana_name"))

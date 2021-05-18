@@ -6,8 +6,8 @@ if SERVER then
     resource.AddFile( "models/zed/weapons/v_banshee.mdl" )
 
     SWEP.Weight				= 1
-	SWEP.AutoSwitchTo		= false
-	SWEP.AutoSwitchFrom		= false
+    SWEP.AutoSwitchTo		= false
+    SWEP.AutoSwitchFrom		= false
 end
 
 if CLIENT then
@@ -16,11 +16,11 @@ if CLIENT then
     SWEP.DrawAmmo	   = false -- not needed?
 
     SWEP.DrawCrosshair = true
-    SWEP.ViewModelFlip = true 
+    SWEP.ViewModelFlip = true
     SWEP.ViewModelFOV  = 74
 
     SWEP.Slot          = 1
-    SWEP.Slotpos       = 1 
+    SWEP.Slotpos       = 1
 
     -- TODO: oder knife oder etwas anders
 end
@@ -31,7 +31,7 @@ SWEP.HoldType              = "knife"
 
 SWEP.ViewModel             = "models/zed/weapons/v_banshee.mdl"
 SWEP.WorldModel            = ""--"models/weapons/v_banshee.mdl" -- change this! w_pistol
-SWEP.UseHands              = true 
+SWEP.UseHands              = true
 
 -- PRIMARY:  Claws Attack
 SWEP.Primary.Damage        = 33
@@ -80,14 +80,6 @@ SWEP.DeploySpeed = 2
 -- TODO: Richtig Implementieren
 SWEP.RegenTime = true
 
-
--- Mana Managment
-SWEP.Mana = {}
-SWEP.Mana.Scream = 25
-SWEP.Mana.Flay = 50
-SWEP.Mana.Psycho = 75
-SWEP.Mana.Heal = 100
-
 function SWEP:Initialize()
     self:SetWeaponHoldType( self.HoldType )
     --self:SetHoldType("knife")
@@ -130,20 +122,20 @@ function SWEP:PrimaryAttack()
         if IsValid(tgt) then
 
             --self:SendWeaponAnim(ACT_VM_MISSCENTER)
-    
+
             local eData = EffectData()
             eData:SetStart(spos)
             eData:SetOrigin(trace.HitPos)
             eData:SetNormal(trace.Normal)
             eData:SetEntity(tgt)
-    
+
             if tgt:IsPlayer() or tgt:GetClass() == "prop_ragdoll" then
                 owner:SetAnimation(PLAYER_ATTACK1)
-                
+
                 self:SendWeaponAnim( ACT_VM_PRIMARYATTACK )
                 tgt:EmitSound( self.Primary.Hit, 100, math.random(90,110) )
                 --self:SendWeaponAnim(ACT_VM_MISSCENTER)
-    
+
                 util.Effect("BloodImpact", eData)
             end
         else
@@ -153,10 +145,10 @@ function SWEP:PrimaryAttack()
             -- TODO: keine Ahnung
             owner:EmitSound( self.Primary.Sound, 100, math.random(80,100) )
         end
-    
+
         -- TODO: Warum brauche ich das?
         --if SERVER then owner:SetAnimation(PLAYER_ATTACK1) end
-        
+
         if SERVER and trace.Hit and trace.HitNonWorld and IsValid(tgt) then
             self:DealDamage(self.Primary.Damage, tgt, trace, spos, sdest, lifesteal)
         end
@@ -167,7 +159,7 @@ end
 function SWEP:SecondaryAttack()
     self:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
     self:SetNextSecondaryFire( CurTime() + self.Secondary.Delay )
- 
+
     --self.ViewModel = "models/weapons/v_banshee.mdl"
     local owner = self:GetOwner()
 
@@ -186,7 +178,6 @@ function SWEP:SecondaryAttack()
             print("Target:", tgt)
 
             --self:SendWeaponAnim(ACT_VM_MISSCENTER)
-    
             -- local eData = EffectData()
             -- eData:SetStart(spos)
             -- eData:SetOrigin(trace.HitPos)
@@ -199,36 +190,36 @@ function SWEP:SecondaryAttack()
 
             self:PushObject(tgt, trace, self.Secondary.HitForce)
             -- if tgt:IsPlayer()
-            
+
             -- elseif tgt:GetClass() == "prop_ragdoll" then
             --     owner:SetAnimation(PLAYER_ATTACK1)
-                
+
             --     self:SendWeaponAnim( ACT_VM_HITCENTER )
             --     tgt:EmitSound( self.Secondary.Hit, 100, math.random(90,110) )
             --     --self:SendWeaponAnim(ACT_VM_MISSCENTER)
-                
-                
+
+
             --     local phys = tgt:GetPhysicsObject()
 
             --     if t
-                
-            --     -- tgt:SetPhysicsAttacker( self:GetOwner() )
-			-- 	--phys:Wake()
-			-- 	self:PushObject(phys, trace, self.Secondary.HitForce)
-    
+
+            --     -- tgt:SetPhysicsAttacker( self:GetOwner() ) 
+            -- 	--phys:Wake()
+            -- 	self:PushObject(phys, trace, self.Secondary.HitForce)
+
             --     --util.Effect("BloodImpact", eData)
             -- end
         else
             owner:SetAnimation(PLAYER_ATTACK1)
-            
+
             self:SendWeaponAnim(ACT_VM_MISSCENTER)
             -- TODO: keine Ahnung
             owner:EmitSound( self.Secondary.Sound, 100, math.random(80,100) )
         end
-    
+
         -- TODO: Warum brauche ich das?
         --if SERVER then owner:SetAnimation(PLAYER_ATTACK1) end
-        
+
         if SERVER and trace.Hit and trace.HitNonWorld and IsValid(tgt) then
             self:DealDamage(self.Secondary.Damage, tgt, trace, spos, sdest, lifesteal)
         end
@@ -256,7 +247,7 @@ function SWEP:MeleeTrace(hitDistance)
         mins = kmins,
         maxs = kmaxs
     })
-    
+
     -- TODO: not shure about this
     if not IsValid(trace.Entity) then
         trace = util.TraceLine({
@@ -266,13 +257,13 @@ function SWEP:MeleeTrace(hitDistance)
             mask = MASK_SHOT_HULL
         })
     end
-    
+
     return trace.Entity, spos, sdest, trace
 end
 
 
 function SWEP:DealDamage(damage, tgt, trace, spos, sdest, lifesteal)
-   
+
     local owner = self:GetOwner()
 
     if tgt:IsPlayer() then
@@ -285,29 +276,28 @@ function SWEP:DealDamage(damage, tgt, trace, spos, sdest, lifesteal)
             dmg:SetDamageType(DMG_SLASH)
 
             tgt:DispatchTraceAttack(dmg, spos + (owner:GetAimVector() * 3), sdest)
-            
+
         local health = tgt:Health()
         if  health < (damage + 5) then
             --self:Murder(trace, spos, sdest)
-            
+
             -- TODO: if Player has aqquired the lifesteal item: 20% of remaining health + 10 flat
             if lifesteal and self.RegenTime then
-                owner:AddHealth(health * 0.2 + 10)
+                --owner:AddHealth(health * 0.2 + 10)
             end
         else
             -- TODO: if Player has aqquired the lifesteal item
             if lifesteal and self.RegenTime then
-                owner:AddHealth(damage * 0.2)
+                --owner:AddHealth(damage * 0.2)
             end
         end
-    
+
     elseif tgt:GetClass() == "prop_ragdoll" then
         -- TODO: if Player haS aqquired lifesteal from corpses item he can regenerate life from corpses
         if lifesteal and self.RegenTime then
-            owner:AddHealth(damage * 0.2)
-        end 
+            --owner:AddHealth(damage * 0.2)
+        end
         -- TODO: implement something to cound the remaining life a corpse has
-        
     end
 end
 

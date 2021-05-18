@@ -12,12 +12,10 @@ if CLIENT then -- CLIENT
 	}
 
 	function HUDELEMENT:PreInitialize()
-		print("PreInitialize old TTT:", self.Base)
 		BaseClass.PreInitialize(self)
 
 		local hud = huds.GetStored("old_ttt")
 		if hud then
-			print("ForceELement:", self.id)
 			hud:ForceElement(self.id)
 		end
 
@@ -27,7 +25,6 @@ if CLIENT then -- CLIENT
 	end
 
 	function HUDELEMENT:Initialize()
-		print("Initialize old TTT")
 		BaseClass.Initialize(self)
 	end
 
@@ -89,7 +86,6 @@ if CLIENT then -- CLIENT
 	-- end
 
 	function HUDELEMENT:Draw()
-		print("Draw mana old ttt")
 		local client = LocalPlayer()
 
 		if not IsValid(client) then return end
@@ -104,7 +100,6 @@ if CLIENT then -- CLIENT
 
 			multiplier = mana / 100
 
-			print("Old TTT - Mana:", self.scale)
 			-- if not client:GetNWInt("Mana", 0) > 0 then
 			-- 	local bloodlustTime = client:GetNWInt("Bloodlust", 0)
 			-- 	local delay = GetGlobalInt("ttt2_vamp_bloodtime")

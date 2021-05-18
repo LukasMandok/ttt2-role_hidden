@@ -12,13 +12,13 @@ roles.InitCustomTeam(ROLE.name, {
 })
 
 function ROLE:PreInitialize()
-	roles.SetBaseRole(self, ROLE_HIDDEN)
+    roles.SetBaseRole(self, ROLE_HIDDEN)
 
     self.color = Color(0, 49, 82, 255)
 
     self.abbr = "slk"
-	self.score.surviveBonusMultiplier = 0.5
-	self.score.timelimitMultiplier = -0.5
+    self.score.surviveBonusMultiplier = 0.5
+    self.score.timelimitMultiplier = -0.5
 	self.score.killsMultiplier = 5
 	self.score.teamKillsMultiplier = -16
 	self.score.bodyFoundMuliplier = 0
@@ -33,8 +33,9 @@ function ROLE:PreInitialize()
 		credits = 2,
 		togglable = true,
 		random = 20,
-        shopFallback = SHOP_FALLBACK_TRAITOR
+         shopFallback = SHOP_FALLBACK_TRAITOR
 	}
+
 end
 
 function ROLE:Initialize()
@@ -57,16 +58,21 @@ if SERVER then
 
     hook.Add("KeyPress", "StalkerEnterStalker", function(ply, key)
         if ply:GetSubRole() ~= ROLE_STALKER or not ply:Alive() or ply:IsSpec() then return end
-        if ply:GetNWBool("ttt2_hd_stalker_mode", false) then return end
 
         if key == IN_RELOAD then
-            ply:SetStalkerMode_slk(true)
-            --STATUS:AddStatus(ply, "ttt2_hdn_invisbility")
-            print("Equipp Knife and Claws")
-            --ply:GiveEquipmentWeapon("weapon_ttt_hd_knife")
-            ply:GiveEquipmentWeapon("weapon_ttt_slk_claws")
-            ply:GiveEquipmentWeapon("weapon_ttt_slk_tele")
-            ply:GiveEquipmentItem("item_ttt_climb")
+            if ply:GetNWBool("ttt2_hd_stalker_mode", false) == false then
+                ply:SetStalkerMode_slk(true)
+                --STATUS:AddStatus(ply, "ttt2_hdn_invisbility")
+                --ply:GiveEquipmentWeapon("weapon_ttt_hd_knife")
+                ply:GiveEquipmentWeapon("weapon_ttt_slk_claws")
+                ply:GiveEquipmentWeapon("weapon_ttt_slk_tele")
+                ply:GiveEquipmentItem("item_ttt_climb")
+
+            elseif ply:GetNWBool("ttt2_slk_regenerate_mode", false) == false then 
+                ply:SetRegenerateMode(true)
+            else
+                ply:SetRegenerateMode(false)
+            end
         end
     end)
 end

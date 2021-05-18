@@ -14,8 +14,12 @@ if not plymeta then
     Error("[TTT2 STALKER] FAILED TO FIND PLAYER TABLE")
 end
 
+local CLOAK_FULL = 4
+local CLOAK_PARTIAL = 2
+local CLOAK_NONE = 1
+
 if CLIENT then
-    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1 Load Stalker Handler")
+    --print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1 Load Stalker Handler")
     -- HiddenWallhack not for stalker
 
     -- DoHiddenVision (hook("RenderScreenspaceEffects")) in sh_hd_handler
@@ -46,6 +50,10 @@ if CLIENT then
     -- end )
 end
 
+
+function plymeta:GetMana()
+    return self:GetNWInt("ttt2_stalker_mana")
+end
 
 if SERVER then
 
@@ -83,13 +91,14 @@ if SERVER then
         print("Activate Stalker")
 
         local exclude_tbl = {}
-        exclude_tbl["weapon_ttt_hd_knife"] = true
+        exclude_tbl["weapon_ttt_slk_tele"] = true
         exclude_tbl["weapon_ttt_slk_claws"] = true
         --exclude_tbl["weapon_ttt_hd_nade"] = true
         BetterWeaponStrip(self, exclude_tbl)
 
         self:SetNWBool("ttt2_hd_stalker_mode", true)
-        self:SetNWInt("ttt2_stalker_mana", 100)
+        self.mana_max = 100
+        self:SetNWInt("ttt2_stalker_mana", self.mana_max)
         self:UpdateCloaking()
 
         -- events.Trigger(EVENT_HDN_ACTIVATE, self)
@@ -113,6 +122,59 @@ if SERVER then
             self:DeactivateStalkerStalker()
         end
     end
+
+    function plymeta:AddMana(mana)
+        if self:GetSubRole() ~= ROLE_STALKER then return end
+        self:SetNWInt("ttt2_stalker_mana", math.Clamp(self:GetNWInt("ttt2_stalker_mana", false) + mana, 0, self.mana_max))
+    end
+
+    function plymeta:SetRegenerateMode(bool)
+        if bool then
+            print("CloakMode:", self:GetCloakMode(), CLOAK_FULL)
+            if self:GetCloakMode() ~= CLOAK_FULL or self:GetMana() >= self.mana_max then
+                print("Cloak is not fully charged: do not aktivate Recharge Moded")
+                return
+            end
+            print("Aktivate Cloak Recharge.")
+            self:SetCloakMode(CLOAK_PARTIAL, 0.5)
+            self:SetNWBool("ttt2_slk_regenerate_mode", true)
+        else
+            print("Deaktivate Cloak Recharge")
+            self:UpdateCloaking(true, 1, 0.5)
+            self:SetNWBool("ttt2_slk_regenerate_mode", false)
+        end
+    end
+
+    hook.Add("Think", "StalkerCloakThink", function()
+        local plys = player.GetAll()
+        for i = 1, #plys do
+            local ply = plys[i]
+            if ply:GetSubRole() ~= ROLE_STALKER or ply:GetCloakMode() == CLOAK_NONE then continue end
+
+            if ply:GetNWBool("ttt2_slk_regenerate_mode", false) then
+                if ply:GetMana() < ply.mana_max then
+                    if (ply.mana_time or 0) < CurTime() then
+                        ply:AddMana(1)
+                        ply.mana_time = CurTime() + 0.2
+                    end
+
+                    return
+                else
+                    ply:SetRegenerateMode(false)
+                end
+            end
+            ply:UpdateCloaking()
+        end
+    end)
+
+    hook.Add("EntityTakeDamage", "TTT2StalkerTakeDamage", function(tgt, dmg)
+        if not IsValid(tgt) or not tgt:IsPlayer() or not tgt:Alive() or tgt:IsSpec() then return end
+        if tgt:GetSubRole() ~= ROLE_STALKER then return end
+        if not tgt:GetNWBool("ttt2_hd_stalker_mode", false) then return end
+        tgt:SetRegenerateMode(false)
+        tgt:UpdateCloaking(true)
+    end)
+
 
     -- using ResetHiddenRole from Hidden and their hooks,
     -- probably need to implement for own NetVars

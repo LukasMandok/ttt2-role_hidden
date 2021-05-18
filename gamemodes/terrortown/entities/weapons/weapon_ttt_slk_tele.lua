@@ -130,7 +130,7 @@ function SWEP:TeleProp(ent)
 
     psy:Spawn()
     self.Prop = psy
-    --owner:AddInt("Mana", -self.Mana)
+    owner:AddMana(-75)
     owner:EmitSound(self.Primary.Tele, 50)
     -- net.Start("Flay")
     -- net.Send(owner)
@@ -183,11 +183,11 @@ function SWEP:Tele()
 
     -- TODO: Implement Mana System
     -- if not enough mana, return
-    if owner:GetNWInt("ttt2_stalker_mana") < self.Mana then
+    if owner:GetMana() < self.Mana then
         owner:EmitSound( self.Primary.Miss, 40, 250 )
         return
     end
-    
+
     local phys
     if IsValid(tr.Entity) then
         phys = tr.Entity:GetPhysicsObject()
