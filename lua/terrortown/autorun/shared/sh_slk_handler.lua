@@ -136,11 +136,11 @@ if SERVER then
                 return
             end
             print("Aktivate Cloak Recharge.")
-            self:SetCloakMode(CLOAK_PARTIAL, 0.5)
+            self:SetCloakMode(CLOAK_PARTIAL, 1, 0.4)
             self:SetNWBool("ttt2_slk_regenerate_mode", true)
         else
             print("Deaktivate Cloak Recharge")
-            self:UpdateCloaking(true, 1, 0.5)
+            self:UpdateCloaking(true, 1, 0.4)
             self:SetNWBool("ttt2_slk_regenerate_mode", false)
         end
     end

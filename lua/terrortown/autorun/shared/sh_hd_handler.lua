@@ -153,8 +153,10 @@ if SERVER then
         ply:SetRenderMode(RENDERMODE_TRANSALPHA)
     end
 
-    function plymeta:SetCloakMode(cloak, delta)
+    function plymeta:SetCloakMode(cloak, delta, offset, override)
         delta  = delta or 1
+        offset = offset or 0
+
         local clr = self:GetColor()
         if not self.hiddenColor then self.hiddenColor = clr end
         local render = self:GetRenderMode()
@@ -163,18 +165,30 @@ if SERVER then
         if not self.hiddenMat then self.hiddenMat = mat end
 
         if cloak == CLOAK_FULL then
+            --print("Set Full Cloak")
             mat = "sprites/heatwave"
             clr = Color(255, 255, 255, 3)
             render = RENDERMODE_TRANSALPHA
         elseif cloak == CLOAK_PARTIAL then
-            local pct = self:Health() / (self:GetMaxHealth() - 25)
+            --local pct = math.Clamp(self:Health() / (self:GetMaxHealth() - 25), 0, 1)
+
+            local max_pct = 0.6
+            local pct = math.Clamp((self:Health() / (self:GetMaxHealth() - 25) - 1) * -max_pct, 0, 1)
+            local alpha = (override and offset) or (pct + offset) * delta
+            print("alpha:", alpha)
+
+            --print("Health:", self:Health(), "pct:", pct)
             mat = self.hiddenMat
             clr = self.hiddenColor
             -- if not self.hiddenCloakTimeout then
             --     self.hiddenCloakTimeout = CurTime() + (7 * pct) + 3
             -- end
-            clr.a = math.Clamp((255 - (255 * pct)) * delta, 0, 125)
+            --alpha = alpha or self.hiddenCloakAlpha
+            --print("pct:", pct, "delta:", delta, "equ:", (100 - (100 * pct)) * delta, "new equ:", 100 * (pct + offset) * delta)
+            clr.a = math.Clamp(255 * alpha, 20, 200)
+            print("Set Partial Cloak with:", clr.a)
         else
+            print("Disable Cloak")
             clr = self.hiddenColor
             render = self.hiddenRenderMode
             mat = self.hiddenMat
@@ -190,23 +204,27 @@ if SERVER then
         return self.hiddenCloakMode
     end
 
-    function plymeta:UpdateCloaking(timeout, delay, min_alpha)
+    function plymeta:UpdateCloaking(timeout, delay, alphaOffset, override)
         if not IsValid(self) or not self:IsPlayer() then return end
         if GetRoundState() ~= ROUND_ACTIVE or self:GetBaseRole() ~= ROLE_HIDDEN then self:SetCloakMode(CLOAK_NONE) return end  
         if self:IsSpec() or not self:Alive() then self:SetCloakMode(CLOAK_NONE) return end
         if not self:GetNWBool("ttt2_hd_stalker_mode", false) then self:SetCloakMode(CLOAK_NONE) return end
 
-        delay = delay or 5
+        --delay = delay or 5
 
         if timeout then
-            self.hiddenCloakTimeout = CurTime() + delay
+            -- todo: make dynamic delay
+            self.hiddenCloakDelay = delay or (8 * (self:Health() / self:GetMaxHealth()))
+            self.hiddenCloakTimeout = CurTime() + self.hiddenCloakDelay
+            self.hiddenAlphaOffset = alphaOffset or 0
         elseif self.hiddenCloakTimeout and self.hiddenCloakTimeout > CurTime() then
             timeout = true
         end
         if timeout then
-            local start = self.hiddenCloakTimeout - delay
-            local alpha = (min_alpha or 1) - (CurTime() - start) / (start)
-            self:SetCloakMode(CLOAK_PARTIAL, alpha)
+            local start = self.hiddenCloakTimeout - self.hiddenCloakDelay
+            local delta = (1 - (CurTime() - start) / self.hiddenCloakDelay) --* self.hiddenStartAlpha
+
+            self:SetCloakMode(CLOAK_PARTIAL, delta, self.hiddenAlphaOffset, override)
         else
             self:SetCloakMode(CLOAK_FULL)
         end

@@ -36,6 +36,8 @@ function ROLE:PreInitialize()
          shopFallback = SHOP_FALLBACK_TRAITOR
 	}
 
+    self.isEvil = true
+
 end
 
 function ROLE:Initialize()
