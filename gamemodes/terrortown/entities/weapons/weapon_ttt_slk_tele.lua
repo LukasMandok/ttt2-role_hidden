@@ -1,65 +1,77 @@
 if engine.ActiveGamemode() ~= "terrortown" then return end
 
+game.AddAmmoType( {
+	name = "stalker_tele",
+} )
+
 if SERVER then
     AddCSLuaFile()
-    SWEP.Weight = 1
-    SWEP.AutoSwitchTo = false
+    SWEP.Weight         = 1
+    SWEP.AutoSwitchTo   = false
     SWEP.AutoSwitchFrom = false
 end
 
 if CLIENT then
-    SWEP.PrintName = "weapon_ttt_slk_tele_name"
-    SWEP.DrawAmmo = false -- not needed?
-    SWEP.DrawCrosshair = true
-    SWEP.ViewModelFlip = true
-    SWEP.ViewModelFOV = 74
-    SWEP.Slot = 2
-    SWEP.Slotpos = 2
-    -- TODO: oder knife oder etwas anders
+    SWEP.PrintName      = "weapon_ttt_slk_tele_name"
+    SWEP.DrawAmmo       = true -- not needed?
+    SWEP.DrawCrosshair  = true
+    SWEP.ViewModelFlip  = false
+    SWEP.ViewModelFOV   = 74
+    SWEP.Slot           = 2
+    SWEP.Slotpos        = 2
+
+    SWEP.EquipMenuData = {
+        type = "Weapon",
+        desc = "Control objects with the power of your mind. \nMana cost: 75"
+    }
 end
 
 SWEP.Base = "weapon_tttbase"
-SWEP.HoldType = "knife"
-SWEP.ViewModel = ""
-SWEP.WorldModel = ""
---SWEP.UseHands              = true 
--- PRIMARY:  Claws Attack
-SWEP.Primary.Delay = 0.1
-SWEP.Primary.Automatic = false
-SWEP.Primary.ClipSize = 1 -- 1
-SWEP.Primary.DefaultClip = 1 -- 1
-SWEP.Primary.Ammo = "none" -- do i need this?
-SWEP.Primary.Tele = Sound("npc/turret_floor/active.wav")
-SWEP.Primary.Miss = Sound("ambient/atmosphere/cave_hit2.wav")
--- SECONDARY: Claws Push
-SWEP.Secondary.Delay = 2
-SWEP.Secondary.Automatic = false
-SWEP.Secondary.DefaultClip = -1
-SWEP.Secondary.ClipSize = -1
-SWEP.Secondary.Ammo = "none"
-SWEP.Secondary.TeleShot = Sound("ambient/levels/citadel/portal_beam_shoot5.wav")
--- SWEP.Secondary.HitForce    = 700
--- SWEP.Secondary.ClipSize    = -1
--- SWEP.Secondary.DefaultClip = -1
--- SWEP.Secondary.Automatic   = false
--- SWEP.Secondary.Ammo        = "none"
--- SWEP.Secondary.Delay       = 3
--- SWEP.Secondary.Sound	   = Sound( "weapons/knife/knife_slash2.wav" )
--- SWEP.Secondary.Hit         = Sound( "npc/fast_zombie/claw_strike3.wav" )
+
+-- Visuals
+SWEP.ViewModel              = "models/zed/weapons/v_banshee.mdl"
+SWEP.WorldModel             = ""
+SWEP.HoldType               = "magic"
+SWEP.UseHands               = true
+
+-- Shop settings
+SWEP.Kind                   = WEAPON_HEAVY
+SWEP.CanBuy                 = {ROLE_STALKER}
+SWEP.LimitedStock           = true
+
+-- PRIMARY: Tele Shot
+SWEP.Primary.Delay          = 0.2
+SWEP.Primary.Automatic      = false
+SWEP.Primary.ClipSize       = 1 -- 1
+SWEP.Primary.DefaultClip    = 1 -- 1
+SWEP.Primary.Ammo           = "stalker_tele" -- do i need this?
+SWEP.Primary.Tele           = Sound("npc/turret_floor/active.wav")
+SWEP.Primary.Miss           = Sound("ambient/atmosphere/cave_hit2.wav")
+SWEP.Primary.Mana           = 50
+
+-- SECONDARY: Start Tele 
+SWEP.Secondary.Delay        = 10
+SWEP.Secondary.Automatic    = false
+SWEP.Secondary.DefaultClip  = -1
+SWEP.Secondary.ClipSize     = -1
+SWEP.Secondary.Ammo         = "none"
+SWEP.Secondary.TeleShot     = Sound("ambient/levels/citadel/portal_beam_shoot5.wav")
+SWEP.Secondary.Mana         = 25
+
 -- TTT2 related
-SWEP.Kind = WEAPON_SPECIAL
-SWEP.MaxDistance = 250
-SWEP.AllowDrop = false
-SWEP.IsSilent = true
+SWEP.MaxDistance        = 250
+SWEP.AllowDrop          = false
+SWEP.IsSilent           = true
+
 -- Pull out faster than standard guns
-SWEP.DeploySpeed = 2
+SWEP.DeploySpeed        = 2
+
 -- Mana Managment
-SWEP.Mana = 75
--- SWEP.Mana.Tele = 75
+
+
 
 function SWEP:Initialize()
     self:SetWeaponHoldType(self.HoldType)
-    --self:SetHoldType("knife")
 end
 
 -- function SWEP:Holster()
@@ -77,27 +89,101 @@ function SWEP:Equip(owner)
     -- STATUS:RemoveStatus(owner, "ttt2_hdn_knife_recharge")
 end
 
+function SWEP:Think()
+    local owner = self:GetOwner()
+    if not IsValid(owner) or owner:GetSubRole() ~= ROLE_STALKER or not owner:GetNWBool("ttt2_hd_stalker_mode", false) then return end
+
+    local mana_cost = self.Primary.Mana + self.Secondary.Mana
+
+    local ammo = math.Clamp(math.floor(self:GetOwner():GetMana() / mana_cost) - self:Clip1(), 0, 10)
+    owner:SetAmmo(ammo, self:GetPrimaryAmmoType())
+
+    if owner:GetMana() < mana_cost then
+        --print("Not enough mana")
+    return end
+
+    if self:GetNextSecondaryFire() > CurTime() then
+        --print("NextSecondaryFire not valid:", self:GetNextSecondaryFire())
+    return end
+
+    self:SetClip1(1)
+    -- self:Reload()
+end
+
+-- function SWEP:Reload()
+--     print("Try Reloading")
+--     if self:GetOwner():GetAmmoCount( self:GetPrimaryAmmoType() ) < 1 then
+--         print("Not enough Ammo available:", self:GetOwner():GetAmmoCount(self:GetPrimaryAmmoType()))
+--     return end
+--     if self.Clip1() == self.Primary.ClipSize then
+--         print("Clip already full!:", self.Clip1())
+--     return end
+
+--     print("Set Clip1 to:", self.Primary.ClipSize)
+--     self:SetClip1(self.Primary.ClipSize)
+-- end
+
+function SWEP:CanSecondaryAttack()
+    -- if self:GetOwner():GetMana() < (self.Primary.Mana + self.Secondary.Mana) then
+    --     self:SetClip1()
+    --     return false
+    -- end
+    -- print("AmmoCOunt:", self:GetOwner():GetAmmoCount(self:GetPrimaryAmmoType()))
+    -- if self:GetOwner():GetAmmoCount(self:GetPrimaryAmmoType()) < 1 then
+    --     self:GetOwner():EmitSound( self.Primary.Miss, 40, 250 )
+    -- return false
+    -- end
+    if self:Clip1() < 1 then
+        --print("not enough ammo:", self:Clip1())
+        self:GetOwner():EmitSound( self.Primary.Miss, 40, 250 )
+        self:SetNextSecondaryFire(CurTime() + self.Primary.Delay)
+        return false
+    end
+
+    return true
+end
+
+-- end
+
+
 function SWEP:PrimaryAttack()
     -- TODO: Only set this, if the attack hit something.    
-    self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
+ 
     --self.ViewModel = "models/weapons/v_banshee.mdl"
     local owner = self:GetOwner()
     if not IsValid(owner) or owner:GetSubRole() ~= ROLE_STALKER or not owner:GetNWBool("ttt2_hd_stalker_mode", false) then return end
     --owner:LagCompensation(true)
-    self:ShotTele()
+
+    self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
+
+    if self:ShotTele() then
+        owner:AddMana(-self.Primary.Mana)
+
+        self:SetNextSecondaryFire(CurTime() + self.Secondary.Delay)
+    end
+
+    return true
     --owner:LagCompensation(false)
 end
 
 function SWEP:SecondaryAttack()
-    self:SetNextSecondaryFire(CurTime() + self.Secondary.Delay)
-    --self.ViewModel = "models/zed/weapons/v_banshee.mdl"
     local owner = self:GetOwner()
     if not IsValid(owner) or owner:GetSubRole() ~= ROLE_STALKER or not owner:GetNWBool("ttt2_hd_stalker_mode", false) then return end
+
+    if not self:CanSecondaryAttack() then return end
+
+    self:SetNextSecondaryFire(CurTime() + self.Secondary.Delay)
+    --self.ViewModel = "models/zed/weapons/v_banshee.mdl"
+
     --owner:LagCompensation(true)
     -- local tgt, spos, sdest, trace = self:MeleeTrace()
     -- print("target:", tgt, "pos:", spos, "destination:", sdest, "trace:", trace)
     -- if IsValid(tgt) then
-    self:Tele()
+    if self:Tele() then
+        self:SetClip1(0)
+        --owner:SetAmmo(owner:GetAmmoCount(self:GetPrimaryAmmoType()) - 1, self:GetPrimaryAmmoType())
+        owner:AddMana(-self.Secondary.Mana)
+    end
     --owner:LagCompensation(false)
 end
 
@@ -130,7 +216,6 @@ function SWEP:TeleProp(ent)
 
     psy:Spawn()
     self.Prop = psy
-    owner:AddMana(-75)
     owner:EmitSound(self.Primary.Tele, 50)
     -- net.Start("Flay")
     -- net.Send(owner)
@@ -141,7 +226,6 @@ function SWEP:CanTele(ent, phys)
     if (string.find(ent:GetClass(), "prop_phys") or ent:GetClass() == "prop_ragdoll") and not IsValid(ent:GetParent()) then
         if IsValid(phys) and phys:IsMotionEnabled() and phys:IsMoveable() then
             print("Can Tele: TRUE!")
-
             return true
         end
     end
@@ -162,7 +246,7 @@ function SWEP:ShotTele()
         self.Prop:SetLaunchTarget(tr.HitPos)
         self.Prop = nil
 
-        return
+        return true
     end
 end
 
@@ -183,10 +267,9 @@ function SWEP:Tele()
 
     -- TODO: Implement Mana System
     -- if not enough mana, return
-    if owner:GetMana() < self.Mana then
-        owner:EmitSound( self.Primary.Miss, 40, 250 )
-        return
-    end
+    -- if owner:GetMana() < self.Mana then
+    --     return
+    -- end
 
     local phys
     if IsValid(tr.Entity) then
@@ -197,6 +280,8 @@ function SWEP:Tele()
     if IsValid(tr.Entity) and IsValid(phys) and self:CanTele(tr.Entity, phys) then
         print("Trace has hit object", tr.Entity)
         self:TeleProp(tr.Entity)
+
+        return true
         -- searches around the hit position for the closest other object
     else
         local dist = 100
@@ -215,12 +300,12 @@ function SWEP:Tele()
         end
 
         if IsValid(ent) then
-            print("Trace did not hit an object", ent)
             self:TeleProp(ent)
 
-            return
+            return true
         end
 
         owner:EmitSound(self.Primary.Miss, 50, 250)
+        return false
     end
 end

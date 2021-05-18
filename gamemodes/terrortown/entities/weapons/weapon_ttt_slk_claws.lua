@@ -21,17 +21,17 @@ if CLIENT then
 
     SWEP.Slot          = 1
     SWEP.Slotpos       = 1
-
-    -- TODO: oder knife oder etwas anders
 end
 
 
 SWEP.Base                  = "weapon_tttbase"
-SWEP.HoldType              = "knife"
 
 SWEP.ViewModel             = "models/zed/weapons/v_banshee.mdl"
 SWEP.WorldModel            = ""--"models/weapons/v_banshee.mdl" -- change this! w_pistol
+SWEP.HoldType              = "knife"
 SWEP.UseHands              = true
+
+SWEP.Kind                  = WEAPON_PISTOL
 
 -- PRIMARY:  Claws Attack
 SWEP.Primary.Damage        = 33
@@ -68,14 +68,12 @@ SWEP.Secondary.Hit         = Sound( "npc/fast_zombie/claw_strike3.wav" )
 -- SWEP.Secondary.TeleShot    = Sound( "ambient/levels/citadel/portal_beam_shoot5.wav" )
 
 -- TTT2 related
-SWEP.Kind        = WEAPON_SPECIAL
-SWEP.HitDistance = 64
+SWEP.HitDistance = 50
 SWEP.AllowDrop   = false
 SWEP.IsSilent    = true
 
 -- Pull out faster than standard guns
 SWEP.DeploySpeed = 2
-
 
 -- TODO: Richtig Implementieren
 SWEP.RegenTime = true

@@ -38,6 +38,8 @@ function ROLE:PreInitialize()
 
     self.isEvil = true
 
+    self.mana_max = 200
+
 end
 
 function ROLE:Initialize()
@@ -68,6 +70,7 @@ if SERVER then
                 --ply:GiveEquipmentWeapon("weapon_ttt_hd_knife")
                 ply:GiveEquipmentWeapon("weapon_ttt_slk_claws")
                 ply:GiveEquipmentWeapon("weapon_ttt_slk_tele")
+                ply:GiveEquipmentWeapon("weapon_ttt_slk_scream")
                 ply:GiveEquipmentItem("item_ttt_climb")
 
             elseif ply:GetNWBool("ttt2_slk_regenerate_mode", false) == false then 

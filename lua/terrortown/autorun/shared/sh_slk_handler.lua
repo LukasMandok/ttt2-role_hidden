@@ -55,6 +55,10 @@ function plymeta:GetMana()
     return self:GetNWInt("ttt2_stalker_mana")
 end
 
+function plymeta:GetMaxMana()
+    return self:GetNWInt("ttt2_stalker_mana_max")
+end
+
 if SERVER then
 
     -- using plymeta:SetCloakMode
@@ -93,12 +97,12 @@ if SERVER then
         local exclude_tbl = {}
         exclude_tbl["weapon_ttt_slk_tele"] = true
         exclude_tbl["weapon_ttt_slk_claws"] = true
-        --exclude_tbl["weapon_ttt_hd_nade"] = true
+        exclude_tbl["weapon_ttt_slk_scream"] = true
         BetterWeaponStrip(self, exclude_tbl)
 
         self:SetNWBool("ttt2_hd_stalker_mode", true)
-        self.mana_max = 100
-        self:SetNWInt("ttt2_stalker_mana", self.mana_max)
+        self:SetNWInt("ttt2_stalker_mana_max", STALKER.mana_max)
+        self:SetNWInt("ttt2_stalker_mana", STALKER.mana_max)
         self:UpdateCloaking()
 
         -- events.Trigger(EVENT_HDN_ACTIVATE, self)
@@ -125,13 +129,13 @@ if SERVER then
 
     function plymeta:AddMana(mana)
         if self:GetSubRole() ~= ROLE_STALKER then return end
-        self:SetNWInt("ttt2_stalker_mana", math.Clamp(self:GetNWInt("ttt2_stalker_mana", false) + mana, 0, self.mana_max))
+        self:SetNWInt("ttt2_stalker_mana", math.Clamp(self:GetNWInt("ttt2_stalker_mana", false) + mana, 0, self:GetMaxMana()))
     end
 
     function plymeta:SetRegenerateMode(bool)
         if bool then
             print("CloakMode:", self:GetCloakMode(), CLOAK_FULL)
-            if self:GetCloakMode() ~= CLOAK_FULL or self:GetMana() >= self.mana_max then
+            if self:GetCloakMode() ~= CLOAK_FULL or self:GetMana() >= self:GetMaxMana() then
                 print("Cloak is not fully charged: do not aktivate Recharge Moded")
                 return
             end
@@ -152,9 +156,9 @@ if SERVER then
             if ply:GetSubRole() ~= ROLE_STALKER or ply:GetCloakMode() == CLOAK_NONE then continue end
 
             if ply:GetNWBool("ttt2_slk_regenerate_mode", false) then
-                if ply:GetMana() < ply.mana_max then
+                if ply:GetMana() < ply:GetMaxMana() then
                     if (ply.mana_time or 0) < CurTime() then
-                        ply:AddMana(1)
+                        ply:AddMana(2)
                         ply.mana_time = CurTime() + 0.2
                     end
 

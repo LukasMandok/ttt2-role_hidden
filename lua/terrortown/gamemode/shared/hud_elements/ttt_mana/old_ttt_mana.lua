@@ -96,9 +96,8 @@ if CLIENT then -- CLIENT
 		if not color then return end
 
 		if client:IsActive() and client:Alive() and client:GetSubRole() == ROLE_STALKER and client:GetNWBool("ttt2_hd_stalker_mode", false) then
-			mana = client:GetNWInt("ttt2_stalker_mana", 0)
-
-			multiplier = mana / 100
+			mana = client:GetMana()
+			multiplier = mana / client:GetMaxMana()
 
 			-- if not client:GetNWInt("Mana", 0) > 0 then
 			-- 	local bloodlustTime = client:GetNWInt("Bloodlust", 0)

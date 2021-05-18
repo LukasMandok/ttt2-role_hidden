@@ -89,9 +89,8 @@ if CLIENT then -- CLIENT
 		if not color then return end
 
 		--if client:IsActive() and client:Alive() and client:GetSubRole() == ROLE_STALKER then
-		mana = client:GetNWInt("ttt2_stalker_mana", 0)
-
-		multiplier = mana / 100
+		mana = client:GetMana()
+		multiplier = mana / client:GetMaxMana()
 		--end
 
 		-- if client:IsActive() and client:Alive() and client:GetSubRole() == ROLE_STALKER then

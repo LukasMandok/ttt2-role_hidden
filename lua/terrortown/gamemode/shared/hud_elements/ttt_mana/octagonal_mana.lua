@@ -79,7 +79,8 @@ if CLIENT then
 		local x, y = pos.x, pos.y
 		local w, h = size.w, size.h
 
-		local mana = client:GetNWInt("ttt2_stalker_mana", 0)
+		local mana = client:GetMana()
+		local multiplier = mana / client:GetMaxMana()
 
 		-- draw bg and shadow
 		self:DrawBg(x, y, w, h, self.basecolor)
@@ -87,7 +88,7 @@ if CLIENT then
 		self:DrawBg(x, y, self.pad, h, self.darkOverlayColor)
 
 		--           x,            y, width,        height, color,         progress,                                    scale,      text,                                textpadding
-		self:DrawBar(x + self.pad, y, w - self.pad, h, self.extraBarColor, (HUDEditor.IsEditing and 1) or (mana / 100), self.scale, LANG.GetTranslation("slk_mana_name"))
+		self:DrawBar(x + self.pad, y, w - self.pad, h, self.extraBarColor, (HUDEditor.IsEditing and 1) or (multiplier), self.scale, LANG.GetTranslation("slk_mana_name") .. ": " .. tostring(mana))
 	end
 end
 
