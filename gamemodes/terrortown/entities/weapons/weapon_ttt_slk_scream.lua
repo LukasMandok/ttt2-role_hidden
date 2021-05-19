@@ -22,7 +22,7 @@ if CLIENT then
 
     SWEP.EquipMenuData = {
         type = "Weapon",
-        desc = "Control objects with the power of your mind. \nMana cost: 75"
+        desc = "weapon_ttt_slk_scream_desc"
     }
 end
 

@@ -20,6 +20,9 @@ L["weapon_ttt_slk_tele_name"] = "Telekinesis"
 L["weapon_ttt_slk_scream_name"] = "Scream"
 L["weapon_ttt_slk_claws_name"] = "Claws"
 
+L["weapon_ttt_slk_tele_desc"] = "Control objects with the power of your mind. \nMana cost: 75"
+L["weapon_ttt_slk_scream_desc"] = "Scream to stun the opponents in front of you. \nMana cost: 50"
+
 --EPOP
 L["slk_epop_title"] = "{nick} is the Stalker!"
 L["slk_epop_desc"] = "Kill them before they kill you all!"
