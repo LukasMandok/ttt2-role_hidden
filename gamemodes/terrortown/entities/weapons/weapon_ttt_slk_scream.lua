@@ -1,7 +1,7 @@
 if engine.ActiveGamemode() ~= "terrortown" then return end
 
 game.AddAmmoType( {
-	name = "stalker_scream",
+    name = "stalker_scream",
 } )
 
 if SERVER then
@@ -16,7 +16,7 @@ if CLIENT then
     SWEP.DrawAmmo       = false -- not needed?
     SWEP.DrawCrosshair  = false
     SWEP.ViewModelFlip  = false
-    SWEP.ViewModelFOV   = 74
+    SWEP.ViewModelFOV   = 90
     SWEP.Slot           = 3
     SWEP.Slotpos        = 3
 
@@ -31,28 +31,31 @@ SWEP.Base = "weapon_tttbase"
 -- Visuals
 SWEP.ViewModel             = "models/zed/weapons/v_banshee.mdl"
 SWEP.WorldModel            = ""
-SWEP.HoldType              = "magic"
-SWEP.UseHands              = true
+SWEP.HoldType              = "none"
+SWEP.UseHands              = false
 
 -- Shop settings
 SWEP.Kind                  = WEAPON_NADE
 SWEP.CanBuy                = {ROLE_STALKER}
 SWEP.LimitedStock          = true
 
---SWEP.UseHands              = true 
--- PRIMARY:  Claws Attack
+-- PRIMARY:  Scream Attack -> damages and suns players
 SWEP.Primary.Delay          = 10
+SWEP.Primary.Damage         = 20
 SWEP.Primary.Automatic      = false
+SWEP.Primary.HitForce       = 50
 SWEP.Primary.ClipSize       = 1 -- 1
 SWEP.Primary.DefaultClip    = 1 -- 1
-SWEP.Primary.Ammo           = "stalker_scream" -- do i need this?
-SWEP.Primary.Tele           = Sound("npc/turret_floor/active.wav")
+SWEP.Primary.Ammo           = "stalker_scream"
+SWEP.Primary.Scream         = Sound( "npc/stalker/go_alert2a.wav" )
 SWEP.Primary.Miss           = Sound("ambient/atmosphere/cave_hit2.wav")
 
 -- TTT2 related
-SWEP.MaxDistance = 250
-SWEP.AllowDrop = false
-SWEP.IsSilent = true
+SWEP.MaxDistance    = 250
+SWEP.AllowDrop      = false
+SWEP.IsSilent       = true
+                       -- pitch, yaw, roll
+SWEP.HitAngle       = Angle(45,  60,  0)   -- one direction
 
 -- Pull out faster than standard guns
 SWEP.DeploySpeed = 2
@@ -103,23 +106,23 @@ function SWEP:CanPrimaryAttack()
     return true
 end
 
--- end
-
 
 function SWEP:PrimaryAttack()
 
-    --self.ViewModel = "models/weapons/v_banshee.mdl"
     local owner = self:GetOwner()
     if not IsValid(owner) or owner:GetSubRole() ~= ROLE_STALKER or not owner:GetNWBool("ttt2_hd_stalker_mode", false) then return end
-    --owner:LagCompensation(true)
+
+    if not self:CanPrimaryAttack() then return end
 
     self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
 
     self:SetClip1(0)
     --owner:SetAmmo(owner:GetAmmoCount(self:GetPrimaryAmmoType()) - 1, self:GetPrimaryAmmoType())
-    owner:AddMana(-self.Secondary.Mana)
 
-    self:Scream()
+    --owner:LagCompensation(true)
+    if self:Scream() then
+        owner:AddMana(-self.Mana)
+    end
 
     return true
     --owner:LagCompensation(false)
@@ -127,43 +130,39 @@ end
 
 
 function SWEP:Scream()
+    local owner = self:GetOwner()
 
-	if self.Owner:GetInt( "Mana" ) < self.Mana.Scream then
-	
-		self.Owner:EmitSound( self.Secondary.Miss, 40, 250 )
-		
-		return
-	
-	end
-	
-	self.Owner:EmitSound( self.Secondary.Scream, 100, 90 )
-	self.Owner:AddInt( "Mana", -self.Mana.Scream )
+    owner:EmitSound( self.Primary.Scream, 100, 90 )
 
-	for k,v in pairs( team.GetPlayers( TEAM_HUMAN ) ) do
-	
-		if v:GetPos():Distance( self.Owner:GetPos() ) < 500 then
-		
-			util.BlastDamage( self.Owner, self.Owner, v:GetPos(), 5, 5 )
-			
-			local ed = EffectData()
-			ed:SetOrigin( v:GetPos() )
-			util.Effect( "scream_hit", ed, true, true )
-			
-		end
-		
-	end
-	
-	local tbl = ents.FindByClass( "sent_tripmine" )
-	tbl = table.Add( tbl, ents.FindByClass( "sent_seeker" ) )
-	
-	for k,v in pairs( tbl ) do
-	
-		if v:GetPos():Distance( self.Owner:GetPos() ) < 350 then
-		
-			v:Malfunction()
-		
-		end
-	
-	end
+    --TODO: Create Blast effect
+    local ed = EEffectData()
+    ed:SetOrigin(owner:EyePos())
+    ed:SetAngles(owner:EyeAngles())
+    util.Effect( "ManhackSparks", ed, true, true )
 
+    for k,ply in pairs( util.GetAlivePlayers() ) do
+
+        local vec = ply:GetPos() - owner:GetPos()
+        local angle = vec:Angle() - owner:EyeAngles()
+
+        if not ply:IsSpec() and  (vec:LengthSqr() <  self.MaxDistance^2) and (math.abs(angle.p) < self.HitAngle.p) and (math.abs(angle.y) < self.HitAngle.y) and ply:Team() ~= TEAM_STALKER then
+        	util.BlastDamage( owner, owner, ply:GetPos(), 5, self.Damage )
+
+            -- Screen Effect on the Hit players
+            local ed = EffectData()
+            ed:SetOrigin( ply:GetPos() )
+            util.Effect( "ttt_slk_scream", ed, true, true )
+        end
+    end
+
+    -- local tbl = ents.FindByClass( "sent_tripmine" )
+    -- tbl = table.Add( tbl, ents.FindByClass( "sent_seeker" ) )
+
+    -- for k,v in pairs( tbl ) do
+    --     if v:GetPos():Distance( owner:GetPos() ) < 350 then
+    --         v:Malfunction()
+    --     end
+    -- end
+
+    return true
 end

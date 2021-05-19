@@ -19,22 +19,22 @@ function ROLE:PreInitialize()
     self.abbr = "slk"
     self.score.surviveBonusMultiplier = 0.5
     self.score.timelimitMultiplier = -0.5
-	self.score.killsMultiplier = 5
-	self.score.teamKillsMultiplier = -16
-	self.score.bodyFoundMuliplier = 0
+    self.score.killsMultiplier = 5
+    self.score.teamKillsMultiplier = -16
+    self.score.bodyFoundMuliplier = 0
 
-	self.defaultTeam = TEAM_STALKER
-	self.defaultEquipment = SPECIAL_EQUIPMENT
+    self.defaultTeam = TEAM_STALKER
+    self.defaultEquipment = SPECIAL_EQUIPMENT
 
-	self.conVarData = {
-		pct = 0.13,
-		maximum = 1,
-		minPlayers = 8,
-		credits = 2,
-		togglable = true,
-		random = 20,
-         shopFallback = SHOP_FALLBACK_TRAITOR
-	}
+    self.conVarData = {
+        pct = 0.13,
+        maximum = 1,
+        minPlayers = 8,
+        credits = 2,
+        togglable = true,
+        random = 20,
+        shopFallback = SHOP_FALLBACK_STALKER
+    }
 
     self.isEvil = true
 
