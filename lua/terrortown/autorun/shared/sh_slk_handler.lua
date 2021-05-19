@@ -100,9 +100,11 @@ if SERVER then
         exclude_tbl["weapon_ttt_slk_scream"] = true
         BetterWeaponStrip(self, exclude_tbl)
 
+        local mana_max = GetConVar("ttt2_slk_maximal_mana"):GetInt()
+
         self:SetNWBool("ttt2_hd_stalker_mode", true)
-        self:SetNWInt("ttt2_stalker_mana_max", STALKER.mana_max)
-        self:SetNWInt("ttt2_stalker_mana", STALKER.mana_max)
+        self:SetNWInt("ttt2_stalker_mana_max",mana_max)
+        self:SetNWInt("ttt2_stalker_mana", mana_max)
         self:UpdateCloaking()
 
         -- events.Trigger(EVENT_HDN_ACTIVATE, self)
