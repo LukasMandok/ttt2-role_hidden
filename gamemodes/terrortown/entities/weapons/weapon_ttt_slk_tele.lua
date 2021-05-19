@@ -9,6 +9,10 @@ if SERVER then
     SWEP.Weight         = 1
     SWEP.AutoSwitchTo   = false
     SWEP.AutoSwitchFrom = false
+
+    
+    resource.AddFile("materials/vgiu/ttt/icon_slk_tele")
+    resource.AddFile("materials/vgui/ttt/hud_icon_slk_tele.png")
 end
 
 if CLIENT then
@@ -20,11 +24,13 @@ if CLIENT then
     SWEP.Slot           = 2
     SWEP.Slotpos        = 2
 
-    SWEP.EquipMenuData = {
-        type = "Weapon",
-        desc = "weapon_ttt_slk_tele_desc"
-    }
 end
+
+SWEP.EquipMenuData = {
+    type = "Weapon",
+    name = "weapon_ttt_slk_tele_name",
+    desc = "weapon_ttt_slk_tele_desc"
+}
 
 SWEP.Base = "weapon_tttbase"
 

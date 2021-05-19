@@ -19,9 +19,13 @@ L["slk_mana_name"] = "Mana"
 L["weapon_ttt_slk_claws_name"] = "Krallen"
 L["weapon_ttt_slk_tele_name"] = "Telekinese"
 L["weapon_ttt_slk_scream_name"] = "Schrei"
+L["item_slk_lifesteal_name"] = "Lebensraub"
+L["item_slk_mana_upgrade_name"] = "Mana-Upgrade"
 
 L["weapon_ttt_slk_tele_desc"] = "Kontrolliere Gegenstände mit deinen Gedanken. \nMana Kosten: 75"
 L["weapon_ttt_slk_scream_desc"] = "Schreie, um deine Gegner vor dir zu betäuben. \nMana Kosten: 50"
+L["item_slk_lifesteal_desc"] = "Erhalbe Lebenspunkte zurück, wenn du Gegner mit deinen Krallen angreifst."
+L["item_slk_mana_upgrade_desc"] = "Erweitere deinen Mana Vorrat um 100."
 
 --EPOP
 L["slk_epop_title"] = "{nick} ist der Stalker!"
