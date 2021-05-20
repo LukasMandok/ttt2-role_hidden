@@ -25,6 +25,8 @@ end
 
 if SERVER then
     function ITEM:Equip(ply)
-        self:GetOwner():SetNWInt("ttt2_stalker_mana_max", self:GetOwner():GetNWInt("ttt2_stalker_mana_max") + self.ManaUpgrade)
+        if ply:GetSubRole() ~= ROLE_STALKER or not ply:Alive() or ply:IsSpec() then return end
+
+        ply:SetNWInt("ttt2_stalker_mana_max", ply:GetNWInt("ttt2_stalker_mana_max") + self.ManaUpgrade)
     end
 end

@@ -48,42 +48,42 @@ if SERVER then
     end
 
 
-    local function HitPlayer(tgt, dmg)
-        if not ITEM:CanRegen() then return end
+    function ITEM:HitPlayer(tgt, dmg)
+        if not self:CanRegen() then return end
 
         local health = tgt:Health()
         if  health < (dmg + 5) then
-            ITEM:AddHealth(health * 0.2 + 20)
-            ITEM:SetNextRegen()
+            self:AddHealth(health * 0.2 + 20)
+            self:SetNextRegen()
         else
-            ITEM:AddHealth(dmg * 0.2)
-            ITEM:SetNextRegen()
+            self:AddHealth(dmg * 0.2)
+            self:SetNextRegen()
         end
     end
 
-    local function HitRagdoll(tgt, dmg)
-        if not ITEM:CanRegen() then return end
+    function ITEM:HitRagdoll(tgt, dmg)
+        if not self:CanRegen() then return end
 
         tgt.lifesteal_hits = tgt.lifesteal_hits or 1
 
         if tgt.lifesteal_hits >= 5 then return end
 
-        ITEM:AddHealth(dmg * 0.4)
-        ITEM:SetNextRegen(ITEM.RegenTimeCorpse)
+        self:AddHealth(dmg * 0.4)
+        self:SetNextRegen(self.RegenTimeCorpse)
         tgt.lifesteal_hits = tgt.lifesteal_hits + 1
     end
 
     function ITEM:Initialize()
         -- TODO: Primary entfernen oder so...
         hook.Add("ttt_slk_claws_hit", function(owner, tgt, dmg, primary)
-            if owner ~= ITEM:GetOwner() then
-                print("Owner is not Owner of this Weapon.  Owner:", owner, "self:GetOwner:", ITEM:GetOwner())
+            if owner ~= self:GetOwner() then
+                print("Owner is not Owner of this Weapon.  Owner:", owner, "self:GetOwner:", self:GetOwner())
             return end
 
             if tgt:IsPlayer() and primary then
-                HitPlayer(tgt, dmg)
+                self:HitPlayer(tgt, dmg)
             elseif tgt:IsRagdoll() and primary then
-                HitRagdoll(tgt, dmg)
+                self:HitRagdoll(tgt, dmg)
             end
         end)
     end

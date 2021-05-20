@@ -20,12 +20,14 @@ L["weapon_ttt_slk_tele_name"] = "Telekinesis"
 L["weapon_ttt_slk_scream_name"] = "Scream"
 L["weapon_ttt_slk_claws_name"] = "Claws"
 L["item_slk_lifesteal_name"] = "Lifesteal"
-L["item_slk_mana_upgrade_name"] = "Mana-Upgrade"
+L["item_slk_mana_upgrade_name"] = "Mana Upgrade"
+L["item_slk_mobility_name"] = "Mobility Upgrade"
 
 L["weapon_ttt_slk_tele_desc"] = "Control objects with the power of your mind. \nMana cost: 75"
 L["weapon_ttt_slk_scream_desc"] = "Scream to stun the opponents in front of you. \nMana cost: 50"
 L["item_slk_lifesteal_desc"] = "Get some health back, when attacking players with our claws."
 L["item_slk_mana_upgrade_desc"] = "Increase your maximal Mana Pool by 100."
+L["item_slk_mobility_desc"] = "Increases mobility by allowing you to perform very large jumps and climb walls."
 
 --EPOP
 L["slk_epop_title"] = "{nick} is the Stalker!"
