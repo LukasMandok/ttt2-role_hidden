@@ -11,10 +11,20 @@ ITEM.EquipMenuData = {
     desc = "item_slk_mana_upgrade_desc"
 }
 
-ITEM.material = "vgui/ttt/icon_slk_mana_upgrade"
+ITEM.PrintName = "item_slk_lifesteal_name"
+
 ITEM.CanBuy   = {ROLE_STALKER}
-ITEM.hud      = Material("vgui/ttt/hud_icon_slk_mana_upgrade")  --.png
+ITEM.limited  = false
+
+ITEM.ManaUpgrade = 100
+
+if CLIENT then
+    ITEM.material = "vgui/ttt/icon_slk_mana_upgrade"
+    ITEM.hud      = Material("vgui/ttt/hud_icon_slk_mana_upgrade")  --.png
+end
 
 if SERVER then
-    
+    function ITEM:Equip(ply)
+        self:GetOwner():SetNWInt("ttt2_stalker_mana_max", self:GetOwner():GetNWInt("ttt2_stalker_mana_max") + self.ManaUpgrade)
+    end
 end

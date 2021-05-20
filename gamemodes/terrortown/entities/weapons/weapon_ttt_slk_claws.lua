@@ -107,15 +107,13 @@ function SWEP:PrimaryAttack()
     --self.ViewModel = "models/weapons/v_banshee.mdl"
     local owner = self:GetOwner()
 
-    local lifesteal = true
-
     if not IsValid(owner) or owner:GetSubRole() ~= ROLE_STALKER or not owner:GetNWBool("ttt2_hd_stalker_mode", false) then return end
 
     owner:LagCompensation(true)
 
         local tgt, spos, sdest, trace = self:MeleeTrace(self.HitDistance)
 
-        print("target:", tgt, "pos:", spos, "destination:", sdest, "trace:", trace)
+        --print("target:", tgt, "pos:", spos, "destination:", sdest, "trace:", trace)
 
         if IsValid(tgt) then
 
@@ -148,7 +146,7 @@ function SWEP:PrimaryAttack()
         --if SERVER then owner:SetAnimation(PLAYER_ATTACK1) end
 
         if SERVER and trace.Hit and trace.HitNonWorld and IsValid(tgt) then
-            self:DealDamage(self.Primary.Damage, tgt, trace, spos, sdest, lifesteal)
+            self:DealDamage(self.Primary.Damage, tgt, trace, spos, sdest, true)
         end
 
     owner:LagCompensation(false)
@@ -161,15 +159,13 @@ function SWEP:SecondaryAttack()
     --self.ViewModel = "models/weapons/v_banshee.mdl"
     local owner = self:GetOwner()
 
-    local lifesteal = false
-
     if not IsValid(owner) or owner:GetSubRole() ~= ROLE_STALKER or not owner:GetNWBool("ttt2_hd_stalker_mode", false) then return end
 
     owner:LagCompensation(true)
 
         local tgt, spos, sdest, trace = self:MeleeTrace(self.HitDistance)
 
-        print("target:", tgt, "pos:", spos, "destination:", sdest, "trace:", trace)
+        --print("target:", tgt, "pos:", spos, "destination:", sdest, "trace:", trace)
 
         if IsValid(tgt) then
 
@@ -219,7 +215,7 @@ function SWEP:SecondaryAttack()
         --if SERVER then owner:SetAnimation(PLAYER_ATTACK1) end
 
         if SERVER and trace.Hit and trace.HitNonWorld and IsValid(tgt) then
-            self:DealDamage(self.Secondary.Damage, tgt, trace, spos, sdest, lifesteal)
+            self:DealDamage(self.Secondary.Damage, tgt, trace, spos, sdest, false)
         end
 
     owner:LagCompensation(false)
@@ -260,7 +256,7 @@ function SWEP:MeleeTrace(hitDistance)
 end
 
 
-function SWEP:DealDamage(damage, tgt, trace, spos, sdest, lifesteal)
+function SWEP:DealDamage(damage, tgt, trace, spos, sdest, primary)
 
     local owner = self:GetOwner()
 
@@ -273,29 +269,12 @@ function SWEP:DealDamage(damage, tgt, trace, spos, sdest, lifesteal)
             dmg:SetDamagePosition(owner:GetPos())
             dmg:SetDamageType(DMG_SLASH)
 
+            hook.Run("ttt_slk_claws_hit", owner, tgt, damage, primary)
+
             tgt:DispatchTraceAttack(dmg, spos + (owner:GetAimVector() * 3), sdest)
 
-        local health = tgt:Health()
-        if  health < (damage + 5) then
-            --self:Murder(trace, spos, sdest)
-
-            -- TODO: if Player has aqquired the lifesteal item: 20% of remaining health + 10 flat
-            if lifesteal and self.RegenTime then
-                --owner:AddHealth(health * 0.2 + 10)
-            end
-        else
-            -- TODO: if Player has aqquired the lifesteal item
-            if lifesteal and self.RegenTime then
-                --owner:AddHealth(damage * 0.2)
-            end
-        end
-
     elseif tgt:GetClass() == "prop_ragdoll" then
-        -- TODO: if Player haS aqquired lifesteal from corpses item he can regenerate life from corpses
-        if lifesteal and self.RegenTime then
-            --owner:AddHealth(damage * 0.2)
-        end
-        -- TODO: implement something to cound the remaining life a corpse has
+        hook.Run("ttt_slk_claws_hit", owner, tgt, damage, primary)
     end
 end
 

@@ -11,17 +11,19 @@ if SERVER then
     SWEP.AutoSwitchFrom = false
 
     resource.AddFile("materials/vgiu/ttt/icon_slk_scream")
-    resource.AddFile("materials/vgui/ttt/hud_icon_slk_scream.png")
+    resource.AddFile("materials/vgui/ttt/hud_icon_slk_scream") --.png
 end
 
 if CLIENT then
     SWEP.PrintName      = "weapon_ttt_slk_scream_name"
-    SWEP.DrawAmmo       = false -- not needed?
+    SWEP.DrawAmmo       = true -- not needed?
     SWEP.DrawCrosshair  = false
     SWEP.ViewModelFlip  = false
     SWEP.ViewModelFOV   = 90
     SWEP.Slot           = 3
     SWEP.Slotpos        = 3
+
+    SWEP.material = "vgui/ttt/icon_slk_scream"
 end
 
 SWEP.EquipMenuData = {

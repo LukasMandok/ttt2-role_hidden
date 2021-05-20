@@ -10,9 +10,8 @@ if SERVER then
     SWEP.AutoSwitchTo   = false
     SWEP.AutoSwitchFrom = false
 
-    
     resource.AddFile("materials/vgiu/ttt/icon_slk_tele")
-    resource.AddFile("materials/vgui/ttt/hud_icon_slk_tele.png")
+    resource.AddFile("materials/vgui/ttt/hud_icon_slk_tele") --.png
 end
 
 if CLIENT then
@@ -24,6 +23,7 @@ if CLIENT then
     SWEP.Slot           = 2
     SWEP.Slotpos        = 2
 
+    SWEP.material = "vgui/ttt/icon_slk_tele"
 end
 
 SWEP.EquipMenuData = {
