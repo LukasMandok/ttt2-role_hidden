@@ -70,9 +70,6 @@ if CLIENT then
         render.SetBlend(0)
 
 
-
-
-
         for i = 1, #plys do
             local ply = plys[i]
             if not ply:IsActive() then continue end
@@ -172,22 +169,18 @@ if SERVER then
         elseif cloak == CLOAK_PARTIAL then
             --local pct = math.Clamp(self:Health() / (self:GetMaxHealth() - 25), 0, 1)
 
-            local max_pct = 0.6
+            local max_pct = 0.5
+            local min_pct = 0.1
+
             local pct = math.Clamp((self:Health() / (self:GetMaxHealth() - 25) - 1) * -max_pct, 0, 1)
             local alpha = (override and offset) or (pct + offset) * delta
-
-            --print("Health:", self:Health(), "pct:", pct)
             mat = self.hiddenMat
             clr = self.hiddenColor
-            -- if not self.hiddenCloakTimeout then
-            --     self.hiddenCloakTimeout = CurTime() + (7 * pct) + 3
-            -- end
-            --alpha = alpha or self.hiddenCloakAlpha
+
             --print("pct:", pct, "delta:", delta, "equ:", (100 - (100 * pct)) * delta, "new equ:", 100 * (pct + offset) * delta)
-            clr.a = math.Clamp(255 * alpha, 20, 200)
-            print("Set Partial Cloak with:  alpha =", alpha, " -> ", clr.a)
+            clr.a = math.Clamp(255 * alpha, 255 * min_pct, 200)
+            --print("Set Partial Cloak with:  alpha =", alpha * 100, " -> ", clr.a)
         else
-            print("Disable Cloak")
             clr = self.hiddenColor
             render = self.hiddenRenderMode
             mat = self.hiddenMat
@@ -209,10 +202,7 @@ if SERVER then
         if self:IsSpec() or not self:Alive() then self:SetCloakMode(CLOAK_NONE) return end
         if not self:GetNWBool("ttt2_hd_stalker_mode", false) then self:SetCloakMode(CLOAK_NONE) return end
 
-        --delay = delay or 5
-
         if timeout then
-            -- todo: make dynamic delay
             self.hiddenCloakDelay = delay or (8 * (self:Health() / self:GetMaxHealth()))
             self.hiddenCloakTimeout = CurTime() + self.hiddenCloakDelay
             self.hiddenAlphaOffset = alphaOffset or 0
@@ -221,17 +211,12 @@ if SERVER then
         end
         if timeout then
             local start = self.hiddenCloakTimeout - self.hiddenCloakDelay
-            local delta = (1 - (CurTime() - start) / self.hiddenCloakDelay) --* self.hiddenStartAlpha
+            local delta = (1 - (CurTime() - start) / self.hiddenCloakDelay)
 
             self:SetCloakMode(CLOAK_PARTIAL, delta, self.hiddenAlphaOffset, override)
         else
             self:SetCloakMode(CLOAK_FULL)
         end
-        -- if (self:Health() >= self:GetMaxHealth() - 10) or (not timeout) then
-        --     self:SetCloakMode(CLOAK_FULL)
-        -- else
-        --     self:SetCloakMode(CLOAK_PARTIAL)
-        -- end 
     end
 
     hook.Add("Think", "HiddenCloakThink", function()
@@ -247,7 +232,7 @@ if SERVER then
         if not IsValid(tgt) or not tgt:IsPlayer() or not tgt:Alive() or tgt:IsSpec() then return end
         if tgt:GetSubRole() ~= ROLE_HIDDEN then return end
         if not tgt:GetNWBool("ttt2_hd_stalker_mode", false) then return end
-        tgt:UpdateCloaking(true)
+        tgt:UpdateCloaking(true, 5)
     end)
 
     local function DeactivateCloaking(ply)
