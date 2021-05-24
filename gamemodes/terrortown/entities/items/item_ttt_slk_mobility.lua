@@ -8,11 +8,12 @@ end
 
 ITEM.EquipMenuData = {
     type = "item_passive",
-    name = "item_slk_mobility_name",
-    desc = "item_slk_mobility_desc"
+    name = "item_ttt_slk_mobility_name",
+    desc = "item_ttt_slk_mobility_desc",
+    credits = 2
 }
 
-ITEM.PrintName = "item_slk_mobility_name"
+ITEM.PrintName = "item_ttt_slk_mobility_name"
 
 ITEM.CanBuy     = {ROLE_STALKER}
 ITEM.limited    = true

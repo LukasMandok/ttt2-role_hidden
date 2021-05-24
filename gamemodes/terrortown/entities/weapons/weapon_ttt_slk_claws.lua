@@ -27,7 +27,7 @@ end
 SWEP.Base                  = "weapon_tttbase"
 
 SWEP.ViewModel             = "models/zed/weapons/v_banshee.mdl"
-SWEP.WorldModel            = ""--"models/weapons/v_banshee.mdl" -- change this! w_pistol
+SWEP.WorldModel            = "models/zed/weapons/v_banshee.mdl"--"models/weapons/v_banshee.mdl" -- change this! w_pistol
 SWEP.HoldType              = "knife"
 SWEP.UseHands              = true
 

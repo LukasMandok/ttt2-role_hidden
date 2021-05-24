@@ -40,7 +40,7 @@ function ROLE:PreInitialize()
         pct = 0.13,
         maximum = 1,
         minPlayers = 8,
-        credits = 2,
+        credits = 3,
         togglable = true,
         random = 20,
         shopFallback = SHOP_UNSET -- SHOP_FALLBACK_STALKER -- SHOP_UNSET
@@ -98,8 +98,8 @@ if SERVER then
                 --STATUS:AddStatus(ply, "ttt2_hdn_invisbility")
                 --ply:GiveEquipmentWeapon("weapon_ttt_hd_knife")
                 ply:GiveEquipmentWeapon("weapon_ttt_slk_claws")
-                --ply:GiveEquipmentWeapon("weapon_ttt_slk_tele")
-                --ply:GiveEquipmentWeapon("weapon_ttt_slk_scream")
+                ply:GiveEquipmentWeapon("weapon_ttt_slk_tele")
+                ply:GiveEquipmentWeapon("weapon_ttt_slk_scream")
 
             elseif ply:GetNWBool("ttt2_slk_regenerate_mode", false) == false then 
                 ply:SetRegenerateMode(true)
@@ -107,13 +107,5 @@ if SERVER then
                 ply:SetRegenerateMode(false)
             end
         end
-    end)
-
-elseif CLIENT then
-    hook.Add("TTT2PreventAccessShop", "PreventShopOutsideStalkerMode", function()
-        local ply = LocalPlayer()
-        if ply:GetSubRole() ~= ROLE_STALKER or not ply:Alive() or ply:IsSpec() then return end
-
-        return ply:GetNWBool("ttt2_hd_stalker_mode", false) == false
     end)
 end

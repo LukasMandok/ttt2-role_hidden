@@ -4,7 +4,7 @@ EFFECT.Duration = 10
 function EFFECT:Init(data)
     self.Pos = data:GetOrigin()
 
-    if not LocalPlayer():Alive() or LocalPlayer():GetPos():Distance( seslf.Pos ) > 50 or LocalPlayer():IsSpec() or LocalPlayer():Team() ~= TEAM_STALKER then return end
+    if not LocalPlayer():Alive() or LocalPlayer():GetPos():Distance( self.Pos ) > 50 or LocalPlayer():IsSpec() or LocalPlayer():Team() ~= TEAM_STALKER then return end
 
     DisorientTime = CurTime() + self.Duration
     ViewWobble = 3.5

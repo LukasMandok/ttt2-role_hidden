@@ -7,17 +7,18 @@ end
 
 ITEM.EquipMenuData = {
     type = "item_passive",
-    name = "item_slk_mana_upgrade_name",
-    desc = "item_slk_mana_upgrade_desc"
+    name = "item_ttt_slk_mana_upgrade_name",
+    desc = "item_ttt_slk_mana_upgrade_desc",
+    credits = 1
 }
 
-ITEM.PrintName = "item_slk_lifesteal_name"
+ITEM.PrintName = "item_ttt_slk_lifesteal_name"
 
 ITEM.CanBuy     = {ROLE_STALKER}
 ITEM.limited    = false
 ITEM.notBuyable = false
 
-ITEM.ManaUpgrade = 100
+ITEM.ManaUpgrade = 50
 
 if CLIENT then
     ITEM.material = "vgui/ttt/icon_slk_mana_upgrade"

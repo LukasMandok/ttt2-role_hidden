@@ -29,13 +29,14 @@ end
 SWEP.EquipMenuData = {
     type = "item_weapon",
     name = "weapon_ttt_slk_scream_name",
-    desc = "weapon_ttt_slk_scream_desc"
+    desc = "weapon_ttt_slk_scream_desc",
+    credits = 2
 }
 
 SWEP.Base = "weapon_tttbase"
 
 -- Visuals
-SWEP.ViewModel             = "models/zed/weapons/v_banshee.mdl"
+SWEP.ViewModel             = ""
 SWEP.WorldModel            = ""
 SWEP.HoldType              = "normal"
 SWEP.UseHands              = false
@@ -54,15 +55,15 @@ SWEP.Primary.HitForce       = 50
 SWEP.Primary.ClipSize       = 1 -- 1
 SWEP.Primary.DefaultClip    = 1 -- 1
 SWEP.Primary.Ammo           = "stalker_scream"
-SWEP.Primary.Scream         = Sound( "npc/stalker/go_alert2a.wav" )
+SWEP.Primary.Scream         = Sound("npc/stalker/go_alert2a.wav" )
 SWEP.Primary.Miss           = Sound("ambient/atmosphere/cave_hit2.wav")
 
 -- TTT2 related
-SWEP.MaxDistance    = 250
+SWEP.MaxDistance    = 200
 SWEP.AllowDrop      = false
 SWEP.IsSilent       = true
                        -- pitch, yaw, roll
-SWEP.HitAngle       = Angle(45,  60,  0)   -- one direction
+SWEP.HitAngle       = Angle(30,  45,  0)   -- one direction
 
 -- Pull out faster than standard guns
 SWEP.DeploySpeed = 2
@@ -101,20 +102,23 @@ function SWEP:Think()
     local owner = self:GetOwner()
     if not IsValid(owner) or owner:GetSubRole() ~= ROLE_STALKER or not owner:GetNWBool("ttt2_hd_stalker_mode", false) then return end
 
+    if owner:GetMana() < self.Mana then
+        --print("Not enough mana", owner:GetMana(), self.Mana)
+        owner:SetAmmo(0, self:GetPrimaryAmmoType())
+    return end
+
     local ammo = math.Clamp(math.floor(self:GetOwner():GetMana() / self.Mana ) - self:Clip1(), 0, 10)
     owner:SetAmmo(ammo, self:GetPrimaryAmmoType())
 
-    if owner:GetMana() < self.Mana then
-        --print("Not enough mana")
-    return end
-
     if self:GetNextPrimaryFire() > CurTime() then
+        --print("NextPrimaryFire not ready")
         --print("NextSecondaryFire not valid:", self:GetNextSecondaryFire())
     return end
 
     --print("Reload Ammo:", ammo)
     self:SetClip1(1)
     -- self:Reload()
+
 end
 
 function SWEP:CanPrimaryAttack()
@@ -126,7 +130,6 @@ function SWEP:CanPrimaryAttack()
 
     return true
 end
-
 
 function SWEP:PrimaryAttack()
 
@@ -141,7 +144,7 @@ function SWEP:PrimaryAttack()
     --owner:SetAmmo(owner:GetAmmoCount(self:GetPrimaryAmmoType()) - 1, self:GetPrimaryAmmoType())
 
     --owner:LagCompensation(true)
-    if self:Scream() then
+    if self:Scream() and SERVER then
         owner:AddMana(-self.Mana)
     end
 
@@ -162,17 +165,27 @@ function SWEP:Scream()
     util.Effect( "ManhackSparks", ed, true, true )
 
     for k,ply in pairs( util.GetAlivePlayers() ) do
+    	
+        if ply == owner then continue end
 
         local vec = ply:GetPos() - owner:GetPos()
         local angle = vec:Angle() - owner:EyeAngles()
+        angle:Normalize()
+
+        print("\n", ply:Nick() .. ":")
+        print("Vector:", vec, "condition:", vec:LengthSqr() < self.MaxDistance^2)
+        print("\tvec^2", vec:LengthSqr(), "max^2:", self.MaxDistance^2)
+        print("angle:", angle, "condition p:", math.abs(angle.p) < self.HitAngle.p, "condition y:", math.abs(angle.y) < self.HitAngle.y)
+        print("\tangle p:", math.abs(angle.p), "max p:", self.HitAngle.p)
+        print("\tangle y:", math.abs(angle.y), "max p:", self.HitAngle.y)
 
         if not ply:IsSpec() and  (vec:LengthSqr() <  self.MaxDistance^2) and (math.abs(angle.p) < self.HitAngle.p) and (math.abs(angle.y) < self.HitAngle.y) and ply:Team() ~= TEAM_STALKER then
-        	util.BlastDamage( owner, owner, ply:GetPos(), 5, self.Damage )
+            util.BlastDamage( owner, owner, ply:GetPos(), 5, self.Primary.Damage )
 
             -- Screen Effect on the Hit players
             local ed = EffectData()
             ed:SetOrigin( ply:GetPos() )
-            util.Effect( "ttt_slk_scream", ed, true, true )
+            util.Effect( "effect_ttt_slk_scream", ed, true, true )
         end
     end
 

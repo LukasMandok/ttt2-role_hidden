@@ -30,7 +30,8 @@ if CLIENT then
     SWEP.EquipMenuData = {
         type = "item_weapon",
         name = "weapon_ttt_slk_tele_name",
-        desc = "weapon_ttt_slk_tele_desc"
+        desc = "weapon_ttt_slk_tele_desc",
+        credits = 3
     }
 end
 
@@ -168,11 +169,9 @@ function SWEP:CanSecondaryAttack()
 end
 
 -- end
-
-
 function SWEP:PrimaryAttack()
     -- TODO: Only set this, if the attack hit something.    
- 
+
     --self.ViewModel = "models/weapons/v_banshee.mdl"
     local owner = self:GetOwner()
     if not IsValid(owner) or owner:GetSubRole() ~= ROLE_STALKER or not owner:GetNWBool("ttt2_hd_stalker_mode", false) then return end
@@ -181,9 +180,11 @@ function SWEP:PrimaryAttack()
     self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
 
     if self:ShotTele() then
-        owner:AddMana(-self.Primary.Mana)
-
         self:SetNextSecondaryFire(CurTime() + self.Secondary.Delay)
+    
+        if SERVER then
+            owner:AddMana(-self.Primary.Mana)
+        end
     end
 
     return true
@@ -206,7 +207,9 @@ function SWEP:SecondaryAttack()
     if self:Tele() then
         self:SetClip1(0)
         --owner:SetAmmo(owner:GetAmmoCount(self:GetPrimaryAmmoType()) - 1, self:GetPrimaryAmmoType())
-        owner:AddMana(-self.Secondary.Mana)
+        if SERVER then
+            owner:AddMana(-self.Secondary.Mana)
+        end
     end
     --owner:LagCompensation(false)
 end

@@ -103,7 +103,7 @@ if SERVER then
         local mana_max = GetConVar("ttt2_slk_maximal_mana"):GetInt()
 
         self:SetNWBool("ttt2_hd_stalker_mode", true)
-        self:SetNWInt("ttt2_stalker_mana_max",mana_max)
+        self:SetNWInt("ttt2_stalker_mana_max", mana_max)
         self:SetNWInt("ttt2_stalker_mana", mana_max)
         self:UpdateCloaking()
 
@@ -189,20 +189,19 @@ if SERVER then
         if not IsValid(ply) or not ply:Alive() or ply:IsSpec() then return end
         if ply:GetSubRole() ~= ROLE_STALKER or not ply:GetNWBool("ttt2_hd_stalker_mode", false) then return end
 
-        return (wep:GetClass() == "weapon_ttt_slk_claws" or wep:GetClass() == "weapon_ttt_slk_tele")
+        return (wep:GetClass() == "weapon_ttt_slk_claws" or wep:GetClass() == "weapon_ttt_slk_tele" or wep:GetClass() == "weapon_ttt_slk_scream")
     end)
-
-    -- hook.Add("PlayerCanPickupWeapon", "NoPickupHiddenKnife", function(ply, wep)
-    --     if wep:GetClass() ~= "weapon_ttt_hd_knife" then return end
-    --     if not IsValid(ply) or not ply:Alive() or ply:IsSpec() then return end
-
-    --     return ply:GetSubRole() == ROLE_STALKER
-    -- end)
 
     hook.Add("TTTPlayerSpeedModifier", "StalkerSpeedBonus", function(ply, _, _, speedMod)
         if ply:GetSubRole() ~= ROLE_STALKER or not ply:GetNWBool("ttt2_hd_stalker_mode") then return end
-
-        speedMod[1] = speedMod[1] * 1.6
+        
+        -- if ply:HasEquipmentItem("item_ttt_slk_mobility") then
+        -- --if ply:GetNWBool("ttt2_stalker_mobility") then
+        --     speedMod[1] = speedMod[1] * 1.6
+        -- else
+        --     speedMod[1] = speedMod[1] * 1.3
+        -- end
+        speedMod[1] = speedMod[1] * 1.3
     end)
 
      hook.Add("TTT2StaminaRegen", "StalkerStaminaMod", function(ply, stamMod)
@@ -229,6 +228,14 @@ if SERVER then
 end
 
 if CLIENT then
+    hook.Add("TTT2PreventAccessShop", "PreventShopOutsideStalkerMode", function()
+        local ply = LocalPlayer()
+        if ply:GetSubRole() ~= ROLE_STALKER or not ply:Alive() or ply:IsSpec() then return end
+
+        return ply:GetNWBool("ttt2_hd_stalker_mode", false) == false
+    end)
+
+
     net.Receive("ttt2_slk_epop", function()
         EPOP:AddMessage({
             text = LANG.GetParamTranslation("slk_epop_title", {nick = net.ReadString()}),
