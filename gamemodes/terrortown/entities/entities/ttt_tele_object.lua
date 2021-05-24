@@ -133,7 +133,6 @@ if SERVER then
     end
 
     function ENT:SetLaunchTarget(pos)
-        print("Calling LauchTarget")
         local dir = (pos - self:GetPos()):GetNormal()
         dir.z = math.Clamp(dir.z, -0.5, 1.0)
         self.LaunchDir = dir

@@ -169,8 +169,6 @@ function SWEP:SecondaryAttack()
 
         if IsValid(tgt) then
 
-            print("Target:", tgt)
-
             --self:SendWeaponAnim(ACT_VM_MISSCENTER)
             -- local eData = EffectData()
             -- eData:SetStart(spos)
@@ -361,17 +359,17 @@ end
 
 function SWEP:PushObject(tgt, trace, force) -- phys, pdir, maxforce, is_ragdol
     local dir = self:GetOwner():GetEyeTrace(MASK_SHOT).Normal
-    print("Push Target:", tgt, "direction: ", dir)
+    --print("Push Target:", tgt, "direction: ", dir)
 
     local phys = tgt:GetPhysicsObject()
 
     if IsValid(phys) and not tgt:IsPlayer()     then
         local mass = math.log(math.Clamp(phys:GetMass(), 1, 1000))
-        print("Phys Object has mass:", mass)
+        --print("Phys Object has mass:", mass)
 
         local pushvel = dir * force / mass
         pushvel.z = math.Clamp(pushvel.z, 50, 300)
-        print("Object Push Velocity:", pushvel)
+        --print("Object Push Velocity:", pushvel)
         phys:AddVelocity(pushvel)
 
     elseif tgt:IsPlayer() then
@@ -379,7 +377,7 @@ function SWEP:PushObject(tgt, trace, force) -- phys, pdir, maxforce, is_ragdol
 
         local pushvel = dir * force / mass
         pushvel.z = math.Clamp(pushvel.z, 50, 300)
-        print("Player Push Velocity:", pushvel)
+        --print("Player Push Velocity:", pushvel)
         tgt:SetVelocity(tgt:GetVelocity() + pushvel)
 
     end

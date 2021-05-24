@@ -44,81 +44,65 @@ end
 
 if SERVER then
 
-    function ITEM:Bought()
-        hook.Add("ttt_slk_claws_hit", function(owner, tgt, dmg, primary)
-            if owner ~= self:GetOwner() then
-                print("Owner is not Owner of this Weapon.  Owner:", owner, "self:GetOwner:", self:GetOwner())
-            return end
+    local plymeta = FindMetaTable("Player")
+
+    function plymeta:AddHealth(health)
+
+        if self:Health() == self:GetMaxHealth() then return end
+
+        -- Clamp between 0 and Maximum Health
+        -- TODO: Maybe not needed: CHECK THIS!
+        self:SetHealth( math.Clamp(self:Health() + health, 0, self:GetMaxHealth()))
+    end
+
+    function ITEM:Bought(owner)
+        if owner:GetSubRole() ~= ROLE_STALKER or not owner:Alive() or owner:IsSpec() then return end
+
+        hook.Add("ttt_slk_claws_hit", "StalkerClawsLifesteal", function(ply, tgt, dmg, primary)
+            if ply:HasEquipmentItem(self.id) and ply:GetSubRole() ~= ROLE_STALKER or not ply:Alive() or ply:IsSpec() then return end
 
             if tgt:IsPlayer() and primary then
-                self:HitPlayer(tgt, dmg)
+                self:HitPlayer(ply, tgt, dmg)
             elseif tgt:IsRagdoll() and primary then
-                self:HitRagdoll(tgt, dmg)
+                self:HitRagdoll(ply, tgt, dmg)
             end
         end)
     end
 
     -- Sets the time, where the Item can regenerate Health again
-    function ITEM:SetNextRegen(time)
-        self.NextRegen = CurTime() + (time or self.RegenTime)
+    function ITEM:SetNextRegen(ply, time)
+        ply.NextRegen = CurTime() + (time or self.RegenTime)
     end
 
     -- Tests if the item can regenerate health
-    function ITEM:CanRegen()
-        return self.NextRegen < CurTime()
+    function ITEM:CanRegen(ply)
+        return ply.NextRegen and ply.NextRegen < CurTime() or true
     end
 
-    function ITEM:AddHealth(health)
-        local owner = self:GetOwner()
-
-        if owner:GetHealth() == owner:GetMaxHealth() then return end
-
-        -- Clamp between 0 and Maximum Health
-        -- TODO: Maybe not needed: CHECK THIS!
-        owner:SetHealth( math.Clamp(owner:GetHealth() + health, 0, owner:GetMaxHealth()))
-    end
-
-
-    function ITEM:HitPlayer(tgt, dmg)
-        if not self:CanRegen() then return end
+    function ITEM:HitPlayer(ply, tgt, dmg)
+        if not self:CanRegen(ply) then return end
 
         local health = tgt:Health()
         if  health < (dmg + 5) then
-            self:AddHealth(health * 0.2 + 20)
-            self:SetNextRegen()
+            ply:AddHealth(health * 0.2 + 20)
+            self:SetNextRegen(ply)
         else
-            self:AddHealth(dmg * 0.2)
-            self:SetNextRegen()
+            ply:AddHealth(dmg * 0.2)
+            self:SetNextRegen(ply)
         end
     end
 
-    function ITEM:HitRagdoll(tgt, dmg)
-        if not self:CanRegen() then return end
+    function ITEM:HitRagdoll(ply, tgt, dmg)
+        if not self:CanRegen(ply) then return end
 
         tgt.lifesteal_hits = tgt.lifesteal_hits or 1
 
         if tgt.lifesteal_hits >= 5 then return end
 
-        self:AddHealth(dmg * 0.4)
-        self:SetNextRegen(self.RegenTimeCorpse)
+        ply:AddHealth(dmg * 0.4)
+        self:SetNextRegen(ply, self.RegenTimeCorpse)
         tgt.lifesteal_hits = tgt.lifesteal_hits + 1
     end
 
-    -- function ITEM:Initialize()
-    --     --AddEquipmentToRole(ROLE_STALKER, self)
-
-    --     -- TODO: Primary entfernen oder so...
-    --     hook.Add("ttt_slk_claws_hit", function(owner, tgt, dmg, primary)
-    --         if owner ~= self:GetOwner() then
-    --             print("Owner is not Owner of this Weapon.  Owner:", owner, "self:GetOwner:", self:GetOwner())
-    --         return end
-
-    --         if tgt:IsPlayer() and primary then
-    --             self:HitPlayer(tgt, dmg)
-    --         elseif tgt:IsRagdoll() and primary then
-    --             self:HitRagdoll(tgt, dmg)
-    --         end
-    --     end)
-    -- end
 
 end

@@ -92,8 +92,6 @@ if SERVER then
     function plymeta:ActivateStalkerStalker()
         if self:GetSubRole() ~= ROLE_STALKER then return end
 
-        print("Activate Stalker")
-
         local exclude_tbl = {}
         exclude_tbl["weapon_ttt_slk_tele"] = true
         exclude_tbl["weapon_ttt_slk_claws"] = true
@@ -136,16 +134,16 @@ if SERVER then
 
     function plymeta:SetRegenerateMode(bool)
         if bool then
-            print("CloakMode:", self:GetCloakMode(), CLOAK_FULL)
+            --print("CloakMode:", self:GetCloakMode(), CLOAK_FULL)
             if self:GetCloakMode() ~= CLOAK_FULL or self:GetMana() >= self:GetMaxMana() then
-                print("Cloak is not fully charged: do not aktivate Recharge Moded")
+                --print("Cloak is not fully charged: do not aktivate Recharge Moded")
                 return
             end
-            print("Aktivate Cloak Recharge.")
+            --print("Aktivate Cloak Recharge.")
             self:SetCloakMode(CLOAK_PARTIAL, 1, 0.4)
             self:SetNWBool("ttt2_slk_regenerate_mode", true)
         else
-            print("Deaktivate Cloak Recharge")
+            --print("Deaktivate Cloak Recharge")
             self:UpdateCloaking(true, 1, 0.4)
             self:SetNWBool("ttt2_slk_regenerate_mode", false)
         end

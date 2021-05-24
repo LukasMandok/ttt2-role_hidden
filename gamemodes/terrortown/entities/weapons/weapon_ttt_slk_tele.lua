@@ -89,13 +89,11 @@ SWEP.DeploySpeed        = 2
 -- end)
 
 function SWEP:ShopInit()
-    print("Adding Telekinesis to FallbackTable")
     AddToShopFallback(STALKER.fallbackTable, ROLE_STALKER, self)
     --AddWeaponIntoFallbackTable(self.id, STALKER)
 end
 
 function SWEP:Initialize()
-    print("Tele Initialize")
     self:SetWeaponHoldType(self.HoldType)
 end
 
@@ -217,7 +215,7 @@ end
 -- Turnes Prop into controlled prop
 function SWEP:TeleProp(ent)
     local owner = self:GetOwner()
-    print("Turn Prop into TeleProp")
+    --print("Turn Prop into TeleProp")
     ent.Tele = true
     local psy = ents.Create("ttt_tele_object")
     psy:SetOwner(owner)

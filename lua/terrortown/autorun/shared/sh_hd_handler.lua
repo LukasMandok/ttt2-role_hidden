@@ -175,7 +175,6 @@ if SERVER then
             local max_pct = 0.6
             local pct = math.Clamp((self:Health() / (self:GetMaxHealth() - 25) - 1) * -max_pct, 0, 1)
             local alpha = (override and offset) or (pct + offset) * delta
-            print("alpha:", alpha)
 
             --print("Health:", self:Health(), "pct:", pct)
             mat = self.hiddenMat
@@ -186,7 +185,7 @@ if SERVER then
             --alpha = alpha or self.hiddenCloakAlpha
             --print("pct:", pct, "delta:", delta, "equ:", (100 - (100 * pct)) * delta, "new equ:", 100 * (pct + offset) * delta)
             clr.a = math.Clamp(255 * alpha, 20, 200)
-            print("Set Partial Cloak with:", clr.a)
+            print("Set Partial Cloak with:  alpha =", alpha, " -> ", clr.a)
         else
             print("Disable Cloak")
             clr = self.hiddenColor

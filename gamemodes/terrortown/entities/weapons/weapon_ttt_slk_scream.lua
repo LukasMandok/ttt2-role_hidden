@@ -79,13 +79,13 @@ SWEP.Mana = 50
 -- end)
 
 function SWEP:ShopInit()
-    print("Adding Scream to FallbackTable")
+    --print("Adding Scream to FallbackTable")
     AddToShopFallback(STALKER.fallbackTable, ROLE_STALKER, self)
     --AddWeaponIntoFallbackTable(self.id, STALKER)
 end
 
 function SWEP:Initialize()
-    print("SCream Initialize")
+    --print("SCream Initialize")
     self:SetWeaponHoldType(self.HoldType)
 end
 
@@ -172,12 +172,12 @@ function SWEP:Scream()
         local angle = vec:Angle() - owner:EyeAngles()
         angle:Normalize()
 
-        print("\n", ply:Nick() .. ":")
-        print("Vector:", vec, "condition:", vec:LengthSqr() < self.MaxDistance^2)
-        print("\tvec^2", vec:LengthSqr(), "max^2:", self.MaxDistance^2)
-        print("angle:", angle, "condition p:", math.abs(angle.p) < self.HitAngle.p, "condition y:", math.abs(angle.y) < self.HitAngle.y)
-        print("\tangle p:", math.abs(angle.p), "max p:", self.HitAngle.p)
-        print("\tangle y:", math.abs(angle.y), "max p:", self.HitAngle.y)
+        -- print("\n", ply:Nick() .. ":")
+        -- print("Vector:", vec, "condition:", vec:LengthSqr() < self.MaxDistance^2)
+        -- print("\tvec^2", vec:LengthSqr(), "max^2:", self.MaxDistance^2)
+        -- print("angle:", angle, "condition p:", math.abs(angle.p) < self.HitAngle.p, "condition y:", math.abs(angle.y) < self.HitAngle.y)
+        -- print("\tangle p:", math.abs(angle.p), "max p:", self.HitAngle.p)
+        -- print("\tangle y:", math.abs(angle.y), "max p:", self.HitAngle.y)
 
         if not ply:IsSpec() and  (vec:LengthSqr() <  self.MaxDistance^2) and (math.abs(angle.p) < self.HitAngle.p) and (math.abs(angle.y) < self.HitAngle.y) and ply:Team() ~= TEAM_STALKER then
             util.BlastDamage( owner, owner, ply:GetPos(), 5, self.Primary.Damage )

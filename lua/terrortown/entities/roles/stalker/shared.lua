@@ -63,7 +63,7 @@ function ROLE:Initialize()
 end
 
 hook.Add("InitFallbackShops", "InitWeaponInStalkerShop", function() 
-    print("InitFallbackShop of STALKER")
+    --print("InitFallbackShop of STALKER")
 
     local sweps = weapons.GetList()
 
@@ -80,8 +80,6 @@ end)
 if SERVER then
 
     function ROLE:RemoveRoleLoadout(ply, isRoleChange)
-        print("Remove Equippment: Knife and Claws")
-       -- ply:RemoveEquipmentWeapon("weapon_ttt_hd_knife")
         ply:RemoveEquipmentWeapon("weapon_ttt_slk_claws")
         ply:RemoveEquipmentWeapon("weapon_ttt_slk_tele")
         ply:RemoveEquipmentItem("item_ttt_climb")
