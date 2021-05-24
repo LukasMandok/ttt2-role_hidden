@@ -27,7 +27,7 @@ if CLIENT then
 end
 
 SWEP.EquipMenuData = {
-    type = "Weapon",
+    type = "item_weapon",
     name = "weapon_ttt_slk_scream_name",
     desc = "weapon_ttt_slk_scream_desc"
 }
@@ -37,13 +37,14 @@ SWEP.Base = "weapon_tttbase"
 -- Visuals
 SWEP.ViewModel             = "models/zed/weapons/v_banshee.mdl"
 SWEP.WorldModel            = ""
-SWEP.HoldType              = "none"
+SWEP.HoldType              = "normal"
 SWEP.UseHands              = false
 
 -- Shop settings
 SWEP.Kind                  = WEAPON_NADE
 SWEP.CanBuy                = {ROLE_STALKER}
 SWEP.LimitedStock          = true
+SWEP.notBuyable            = false
 
 -- PRIMARY:  Scream Attack -> damages and suns players
 SWEP.Primary.Delay          = 10
@@ -69,10 +70,24 @@ SWEP.DeploySpeed = 2
 -- Mana Managment
 SWEP.Mana = 50
 
+--AddWeaponIntoFallbackTable(SWEP:GetClass(), STALKER)
+
+-- hook.Add("PostInitPostEntity", "Intiaialize_weapon_ttt_slk_scream", function()
+--     AddToShopFallback(STALKER.fallbackTable, ROLE_STALKER, SWEP)
+--     --AddWeaponIntoFallbackTable(SWEP.id, STALKER)
+-- end)
+
+function SWEP:ShopInit()
+    print("Adding Scream to FallbackTable")
+    AddToShopFallback(STALKER.fallbackTable, ROLE_STALKER, self)
+    --AddWeaponIntoFallbackTable(self.id, STALKER)
+end
 
 function SWEP:Initialize()
+    print("SCream Initialize")
     self:SetWeaponHoldType(self.HoldType)
 end
+
 
 -- function SWEP:Holster()
 --     return false
@@ -141,7 +156,7 @@ function SWEP:Scream()
     owner:EmitSound( self.Primary.Scream, 100, 90 )
 
     --TODO: Create Blast effect
-    local ed = EEffectData()
+    local ed = EffectData()
     ed:SetOrigin(owner:EyePos())
     ed:SetAngles(owner:EyeAngles())
     util.Effect( "ManhackSparks", ed, true, true )

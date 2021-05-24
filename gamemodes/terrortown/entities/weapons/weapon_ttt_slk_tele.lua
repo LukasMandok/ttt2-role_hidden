@@ -1,7 +1,7 @@
 if engine.ActiveGamemode() ~= "terrortown" then return end
 
 game.AddAmmoType( {
-	name = "stalker_tele",
+    name = "stalker_tele",
 } )
 
 if SERVER then
@@ -23,16 +23,22 @@ if CLIENT then
     SWEP.Slot           = 2
     SWEP.Slotpos        = 2
 
+    --SWEP.Category =
+    --SWEP.Icon =
     SWEP.material = "vgui/ttt/icon_slk_tele"
+
+    SWEP.EquipMenuData = {
+        type = "item_weapon",
+        name = "weapon_ttt_slk_tele_name",
+        desc = "weapon_ttt_slk_tele_desc"
+    }
 end
 
-SWEP.EquipMenuData = {
-    type = "Weapon",
-    name = "weapon_ttt_slk_tele_name",
-    desc = "weapon_ttt_slk_tele_desc"
-}
-
 SWEP.Base = "weapon_tttbase"
+
+-- SWEP.Spawnable = true
+-- SWEP.AutoSpawnable = false
+-- SWEP.AdminSpawnable = true
 
 -- Visuals
 SWEP.ViewModel              = "models/zed/weapons/v_banshee.mdl"
@@ -44,6 +50,7 @@ SWEP.UseHands               = true
 SWEP.Kind                   = WEAPON_HEAVY
 SWEP.CanBuy                 = {ROLE_STALKER}
 SWEP.LimitedStock           = true
+SWEP.notBuyable             = false
 
 -- PRIMARY: Tele Shot
 SWEP.Primary.Delay          = 0.2
@@ -72,11 +79,22 @@ SWEP.IsSilent           = true
 -- Pull out faster than standard guns
 SWEP.DeploySpeed        = 2
 
--- Mana Managment
+--AddWeaponIntoFallbackTable(SWEP:GetClass(), STALKER)
 
 
+-- hook.Add("PostInitPostEntity", "Intiaialize_weapon_ttt_slk_tele", function()
+--     AddToShopFallback(STALKER.fallbackTable, ROLE_STALKER, SWEP)
+--     --AddWeaponIntoFallbackTable(SWEP.id, STALKER)
+-- end)
+
+function SWEP:ShopInit()
+    print("Adding Telekinesis to FallbackTable")
+    AddToShopFallback(STALKER.fallbackTable, ROLE_STALKER, self)
+    --AddWeaponIntoFallbackTable(self.id, STALKER)
+end
 
 function SWEP:Initialize()
+    print("Tele Initialize")
     self:SetWeaponHoldType(self.HoldType)
 end
 

@@ -14,8 +14,9 @@ ITEM.EquipMenuData = {
 
 ITEM.PrintName = "item_slk_mobility_name"
 
-ITEM.CanBuy   = {ROLE_STALKER}
-ITEM.limited = true
+ITEM.CanBuy     = {ROLE_STALKER}
+ITEM.limited    = true
+ITEM.notBuyable = false
 
 if CLIENT then
     ITEM.material = "vgui/ttt/icon_slk_mobility"
@@ -25,19 +26,36 @@ end
 ITEM.RegenTime = 2
 
 
-if SERVER then
-    function ITEM:Initialize()
-        hook.Add("KeyPress", "StalkerEnterStalker", function(ply, key)
-            if ply ~= self:GetOwner() and ply:GetSubRole() ~= ROLE_STALKER or not ply:Alive() or ply:IsSpec() then return end
+-- hook.Add("PostInitPostEntity", "Intiaialize_item_ttt_slk_mobility", function()
+--     AddToShopFallback(STALKER.fallbackTable, ROLE_STALKER, ITEM)
+-- end)
 
-            if key == IN_JUMP and input.IsKeyDown(KEY_LSHIFT) then
-                self:DashJump()
-            end
-        end)
-    end
+function ITEM:Initialize()
+    AddToShopFallback(STALKER.fallbackTable, ROLE_STALKER, self)
+end
+--     if SERVER then
+--         AddEquipmentToRole(ROLE_STALKER, self)
+--     elseif CLIENT then
+--         AddEquipmentToRoleEquipment(ROLE_STALKER, self)
+--     end
+-- end
+
+
+if SERVER then
+    -- function ITEM:Initialize()
+    --     AddEquipmentToRole(ROLE_STALKER, self)
+    -- end
 
     function ITEM:Bought(ply)
         if ply:GetSubRole() ~= ROLE_STALKER or not ply:Alive() or ply:IsSpec() then return end
+
+        hook.Add("KeyPress", "StalkerEnterStalker", function(calling_ply, key)
+            if calling_ply ~= ply and ply:GetSubRole() ~= ROLE_STALKER or not ply:Alive() or ply:IsSpec() then return end
+
+            if key == IN_JUMP and ply:KeyDown(IN_SPEED) then
+                self:DashJump()
+            end
+        end)
 
         ply:GiveEquipmentItem("item_ttt_climb")
     end

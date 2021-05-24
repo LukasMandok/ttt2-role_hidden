@@ -13,8 +13,9 @@ ITEM.EquipMenuData = {
 
 ITEM.PrintName = "item_slk_lifesteal_name"
 
-ITEM.CanBuy   = {ROLE_STALKER}
-ITEM.limited  = false
+ITEM.CanBuy     = {ROLE_STALKER}
+ITEM.limited    = false
+ITEM.notBuyable = false
 
 ITEM.ManaUpgrade = 100
 
@@ -23,7 +24,24 @@ if CLIENT then
     ITEM.hud      = Material("vgui/ttt/hud_icon_slk_mana_upgrade")  --.png
 end
 
+function ITEM:Initialize()
+    AddToShopFallback(STALKER.fallbackTable, ROLE_STALKER, self)
+end
+--     if SERVER then
+--         print("Add Equipment Server Side: Mana Upgrade")
+--         AddEquipmentToRole(ROLE_STALKER, self)
+--     elseif CLIENT then
+--         print("Add Equipment Client Side: Maana upgrade")
+--         AddEquipmentToRoleEquipment(ROLE_STALKER, self)
+--     end
+-- end
+
+
 if SERVER then
+    --function ITEM:Initialize()
+        --AddEquipmentToRole(ROLE_STALKER, self)
+    --end
+
     function ITEM:Equip(ply)
         if ply:GetSubRole() ~= ROLE_STALKER or not ply:Alive() or ply:IsSpec() then return end
 

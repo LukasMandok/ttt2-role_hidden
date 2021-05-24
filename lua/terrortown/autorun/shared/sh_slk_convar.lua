@@ -1,4 +1,4 @@
-CreateConVar("ttt2_slk_default_mana", "100", {FCVAR_ARCHIVE, FCVAR_NOTIFY})
+CreateConVar("ttt2_slk_maximal_mana", "100", {FCVAR_ARCHIVE, FCVAR_NOTIFY})
 
 hook.Add("TTTUlxDynamicRCVars", "ttt2_slk_ulx_convars", function(tbl)
     tbl[ROLE_STALKER] = tbl[ROLE_STALKER] or {}

@@ -2,17 +2,19 @@ if engine.ActiveGamemode() ~= "terrortown" then return end
 
 if SERVER then
     AddCSLuaFile()
+
+    resource.AddFile("materials/vgui/ttt/dynamic/roles/icon_slk.vmt")
 end
 
 -- TODO: Implement Mana instead of Ammunition
 
 roles.InitCustomTeam(ROLE.name, {
-    icon = "vgui/ttt/dynamic/roles/icon_hdn",
+    icon = "vgui/ttt/dynamic/roles/icon_slk",
     color = Color(0, 49, 82, 255)
 })
 
 function ROLE:PreInitialize()
-    roles.SetBaseRole(self, ROLE_HIDDEN)
+    --roles.SetBaseRole(self, ROLE_HIDDEN)
 
     self.color = Color(0, 49, 82, 255)
 
@@ -23,8 +25,16 @@ function ROLE:PreInitialize()
     self.score.teamKillsMultiplier = -16
     self.score.bodyFoundMuliplier = 0
 
+
+
+    self.fallbackTable = {} -- = {items.GetStored("weapon_ttt_slk_tele"),
+                        --   --items.GetStored("weapon_ttt_slk_scream"),
+                        --   items.GetStored("item_ttt_slk_mana_upgrade"),
+                        --   items.GetStored("item_ttt_slk_mobility"),
+                        --   items.GetStored("item_ttt_slk_lifesteal")}
+
     self.defaultTeam = TEAM_STALKER
-    self.defaultEquipment = SPECIAL_EQUIPMENT
+    self.defaultEquipment = STALKER_EQUIPMENT
 
     self.conVarData = {
         pct = 0.13,
@@ -33,20 +43,39 @@ function ROLE:PreInitialize()
         credits = 2,
         togglable = true,
         random = 20,
-        shopFallback = SHOP_FALLBACK_STALKER
+        shopFallback = SHOP_UNSET -- SHOP_FALLBACK_STALKER -- SHOP_UNSET
     }
 
     self.isEvil = true
 
-    self.mana_max = 200
-
 end
 
 function ROLE:Initialize()
+    roles.SetBaseRole(self, ROLE_HIDDEN)
+    --RunConsoleCommand("ttt_" .. self.abbr .. "_shop_fallback", SHOP_FALLBACK_STALKER)
+
     if SERVER and JESTER then
         self.networkRoles = {JESTER}
+    elseif CLIENT then
+        --print("\n\n\n Hier könnte der EquipmentTable gelöscht werden")
+        --Equipment[ROLE_STALKER] = nil
     end
 end
+
+hook.Add("InitFallbackShops", "InitWeaponInStalkerShop", function() 
+    print("InitFallbackShop of STALKER")
+
+    local sweps = weapons.GetList()
+
+    for i = 1, #sweps do
+        local wep = sweps[i]
+        if wep.ShopInit then
+            wep:ShopInit()
+        end
+    end
+    --InitFallbackShop(STALKER, STALKER.fallbackTable)
+    --RunConsoleCommand("ttt_" .. STALKER.abbr .. "_shop_fallback", SHOP_FALLBACK_STALKER)
+end)
 
 if SERVER then
 
@@ -69,8 +98,8 @@ if SERVER then
                 --STATUS:AddStatus(ply, "ttt2_hdn_invisbility")
                 --ply:GiveEquipmentWeapon("weapon_ttt_hd_knife")
                 ply:GiveEquipmentWeapon("weapon_ttt_slk_claws")
-                ply:GiveEquipmentWeapon("weapon_ttt_slk_tele")
-                ply:GiveEquipmentWeapon("weapon_ttt_slk_scream")
+                --ply:GiveEquipmentWeapon("weapon_ttt_slk_tele")
+                --ply:GiveEquipmentWeapon("weapon_ttt_slk_scream")
 
             elseif ply:GetNWBool("ttt2_slk_regenerate_mode", false) == false then 
                 ply:SetRegenerateMode(true)
@@ -78,5 +107,13 @@ if SERVER then
                 ply:SetRegenerateMode(false)
             end
         end
+    end)
+
+elseif CLIENT then
+    hook.Add("TTT2PreventAccessShop", "PreventShopOutsideStalkerMode", function()
+        local ply = LocalPlayer()
+        if ply:GetSubRole() ~= ROLE_STALKER or not ply:Alive() or ply:IsSpec() then return end
+
+        return ply:GetNWBool("ttt2_hd_stalker_mode", false) == false
     end)
 end

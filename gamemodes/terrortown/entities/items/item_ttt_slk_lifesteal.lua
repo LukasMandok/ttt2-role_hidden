@@ -13,8 +13,9 @@ ITEM.EquipMenuData = {
 
 ITEM.PrintName = "item_slk_lifesteal_name"
 
-ITEM.CanBuy   = {ROLE_STALKER}
-ITEM.limited = true
+ITEM.CanBuy     = {ROLE_STALKER}
+ITEM.limited    = true
+ITEM.notBuyable = false
 
 if CLIENT then
     ITEM.material = "vgui/ttt/icon_slk_lifesteal"
@@ -24,8 +25,37 @@ end
 ITEM.RegenTime = 2
 ITEM.RegenTimeCorpse = 5
 
+-- hook.Add("PostInitPostEntity", "Intiaialize_item_ttt_slk_lifesteal", function()
+--     AddToShopFallback(STALKER.fallbackTable, ROLE_STALKER, ITEM)
+-- end)
+
+function ITEM:Initialize()
+    AddToShopFallback(STALKER.fallbackTable, ROLE_STALKER, self)
+end
+--     if SERVER then
+--         AddEquipmentToRole(ROLE_STALKER, self)
+
+--     elseif CLIENT then
+--         AddEquipmentToRoleEquipment(ROLE_STALKER, self)
+--     end
+-- end
+
 
 if SERVER then
+
+    function ITEM:Bought()
+        hook.Add("ttt_slk_claws_hit", function(owner, tgt, dmg, primary)
+            if owner ~= self:GetOwner() then
+                print("Owner is not Owner of this Weapon.  Owner:", owner, "self:GetOwner:", self:GetOwner())
+            return end
+
+            if tgt:IsPlayer() and primary then
+                self:HitPlayer(tgt, dmg)
+            elseif tgt:IsRagdoll() and primary then
+                self:HitRagdoll(tgt, dmg)
+            end
+        end)
+    end
 
     -- Sets the time, where the Item can regenerate Health again
     function ITEM:SetNextRegen(time)
@@ -73,18 +103,21 @@ if SERVER then
         tgt.lifesteal_hits = tgt.lifesteal_hits + 1
     end
 
-    function ITEM:Initialize()
-        -- TODO: Primary entfernen oder so...
-        hook.Add("ttt_slk_claws_hit", function(owner, tgt, dmg, primary)
-            if owner ~= self:GetOwner() then
-                print("Owner is not Owner of this Weapon.  Owner:", owner, "self:GetOwner:", self:GetOwner())
-            return end
+    -- function ITEM:Initialize()
+    --     --AddEquipmentToRole(ROLE_STALKER, self)
 
-            if tgt:IsPlayer() and primary then
-                self:HitPlayer(tgt, dmg)
-            elseif tgt:IsRagdoll() and primary then
-                self:HitRagdoll(tgt, dmg)
-            end
-        end)
-    end
+    --     -- TODO: Primary entfernen oder so...
+    --     hook.Add("ttt_slk_claws_hit", function(owner, tgt, dmg, primary)
+    --         if owner ~= self:GetOwner() then
+    --             print("Owner is not Owner of this Weapon.  Owner:", owner, "self:GetOwner:", self:GetOwner())
+    --         return end
+
+    --         if tgt:IsPlayer() and primary then
+    --             self:HitPlayer(tgt, dmg)
+    --         elseif tgt:IsRagdoll() and primary then
+    --             self:HitRagdoll(tgt, dmg)
+    --         end
+    --     end)
+    -- end
+
 end
