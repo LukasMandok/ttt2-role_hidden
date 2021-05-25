@@ -152,7 +152,7 @@ if SERVER then
 
     local max_pct = 0.6
     local health_threshold = 25
-    local min_alpha = 0.08
+    local min_alpha = 0.1
     local max_alpha = 0.7
 
     function plymeta:SetCloakMode(cloak, delta, offset, override)
@@ -171,6 +171,7 @@ if SERVER then
             mat = "sprites/heatwave"
             clr = Color(255, 255, 255, 3)
             render = RENDERMODE_TRANSALPHA
+            self:SetNWInt("ttt2_hd_cloak_strength", 100)
         elseif cloak == CLOAK_PARTIAL then
             --local pct = math.Clamp(self:Health() / (self:GetMaxHealth() - 25), 0, 1)
 
@@ -180,13 +181,16 @@ if SERVER then
             clr = self.hiddenColor
 
             --print("pct:", pct, "delta:", delta, "equ:", (100 - (100 * pct)) * delta, "new equ:", 100 * (pct + offset) * delta)
-            clr.a = math.Clamp(255 * alpha, 255 * min_alpha, 255 * max_alpha)
+            alpha = math.Clamp(alpha, min_alpha, max_alpha)
+            clr.a = alpha * 255
             --print("Set Partial Cloak with:  alpha =", alpha * 100, " -> ", clr.a)
+            self:SetNWInt("ttt2_hd_cloak_strength", (1 - alpha) * 100)
         else
             clr = self.hiddenColor
             render = self.hiddenRenderMode
             mat = self.hiddenMat
             self.hiddenCloakTimeout = nil
+            self:SetNWInt("ttt2_hd_cloak_strength", 0)
         end
         self:SetColor(clr)
         self:SetRenderMode(render)
@@ -271,6 +275,7 @@ if SERVER then
         BetterWeaponStrip(self, exclude_tbl)
 
         self:SetNWBool("ttt2_hd_stalker_mode", true)
+        self:SetNWInt("ttt2_hd_cloak_strength", 100)
         self:UpdateCloaking()
 
         -- events.Trigger(EVENT_HDN_ACTIVATE, self)
@@ -323,12 +328,6 @@ if SERVER then
         return ply:GetSubRole() == ROLE_HIDDEN
     end)
 
-    hook.Add("TTTPlayerSpeedModifier", "HiddenSpeedBonus", function(ply, _, _, speedMod)
-        if ply:GetSubRole() ~= ROLE_HIDDEN or not ply:GetNWBool("ttt2_hd_stalker_mode") then return end
-
-        speedMod[1] = speedMod[1] * 1.6
-    end)
-
     hook.Add("TTT2StaminaRegen", "HiddenStaminaMod", function(ply, stamMod)
         if not IsValid(ply) or not ply:Alive() or ply:IsSpec() then return end
         if ply:GetSubRole() ~= ROLE_HIDDEN or not ply:GetNWBool("ttt2_hd_stalker_mode") then return end
@@ -362,6 +361,12 @@ if SERVER then
         ply:SetStalkerMode(false)
     end)
 end
+
+hook.Add("TTTPlayerSpeedModifier", "HiddenSpeedBonus", function(ply, _, _, speedMod)
+    if ply:GetSubRole() ~= ROLE_HIDDEN or not ply:GetNWBool("ttt2_hd_stalker_mode") then return end
+
+    speedMod[1] = speedMod[1] * 1.6
+end)
 
 if CLIENT then
     net.Receive("ttt2_hdn_epop", function()
