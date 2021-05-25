@@ -150,6 +150,11 @@ if SERVER then
         ply:SetRenderMode(RENDERMODE_TRANSALPHA)
     end
 
+    local max_pct = 0.6
+    local health_threshold = 25
+    local min_alpha = 0.08
+    local max_alpha = 0.7
+
     function plymeta:SetCloakMode(cloak, delta, offset, override)
         delta  = delta or 1
         offset = offset or 0
@@ -169,16 +174,13 @@ if SERVER then
         elseif cloak == CLOAK_PARTIAL then
             --local pct = math.Clamp(self:Health() / (self:GetMaxHealth() - 25), 0, 1)
 
-            local max_pct = 0.5
-            local min_pct = 0.1
-
-            local pct = math.Clamp((self:Health() / (self:GetMaxHealth() - 25) - 1) * -max_pct, 0, 1)
+            local pct = math.Clamp((self:Health() / (self:GetMaxHealth() - health_threshold) - 1) * -max_pct, 0, 1)
             local alpha = (override and offset) or (pct + offset) * delta
             mat = self.hiddenMat
             clr = self.hiddenColor
 
             --print("pct:", pct, "delta:", delta, "equ:", (100 - (100 * pct)) * delta, "new equ:", 100 * (pct + offset) * delta)
-            clr.a = math.Clamp(255 * alpha, 255 * min_pct, 200)
+            clr.a = math.Clamp(255 * alpha, 255 * min_alpha, 255 * max_alpha)
             --print("Set Partial Cloak with:  alpha =", alpha * 100, " -> ", clr.a)
         else
             clr = self.hiddenColor
